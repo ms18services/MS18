@@ -4,16 +4,29 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="bg-white" id="home">
+      {/* Hero Section */}
       <section className="relative overflow-visible">
-        <div className="mr-2 -mt-18 mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-6 py-16 md:grid-cols-[1fr_1.25fr] md:py-24">
+        <div className="pointer-events-none absolute inset-0 z-0 -translate-y-15 -translate-x-15">
+          <Image
+            src="/background.svg"
+            alt=""
+            fill
+            priority
+            className="object-contain"
+            sizes="100vw"
+          />
+        </div>
+        
+        <div className="relative z-10 flex -mt-18 mx-auto grid max-w-6xl grid-cols-1 items-center justify-center gap-10 px-6 py-16 md:py-24 md:grid-cols-[1fr_1.25fr]">
           <div>
             
-            <h1 className="mt-6 text-[clamp(3.9rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tight text-slate-900">
+            <h1 className="mt-6 w-[200%] text-[clamp(4.2rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tight text-slate-900">
               <span className="block text-purple-600">
                 <span className="font-miama font-thin inline-block align-baseline text-[2.6em] leading-[0.55]">W</span>
                 <span className="-ml-1">e</span>
                 <span className="ml-2">Focus on</span>
               </span>
+               
               <span className="block -mt-[0.20em]">
                 <span className="text-purple-600">your</span>
                 <span className="text-blue-600"> Computers</span>
@@ -22,18 +35,18 @@ export default function Home() {
             </h1>
 
             <div className="mt-8 flex flex-col items-start gap-3">
-              <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+              <p className="mt-6 font-semibold max-w-xl text-lg leading-8 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[60%] inline-block text-transparent bg-clip-text">
             MS18 Computer Supplies & Services</p>
               
               <Link
                 href="/contact"
-                className="group inline-flex h-8 items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-sm font-medium text-slate-900 shadow-sm transition hover:bg-slate-50"
+                className="opacity-65 hover:opacity-100 group inline-flex h-7 items-center justify-center gap-1 rounded-full border border-black bg-white px-3 text-xs font-medium text-slate-900 shadow-sm transition hover:bg-slate-50"
               >
                 <span>Find out more below.</span>
                 <svg
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="h-4 w-4 text-slate-700"
+                  className="h-4 w-4 text-[#404040]"
                   aria-hidden="true"
                 >
                   <path
@@ -43,19 +56,20 @@ export default function Home() {
                   />
                 </svg>
               </Link>
-              
-            </div>
+           </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-8 rounded-[40px] bg-gradient-to-br from-purple-100 via-white to-blue-100 blur-2xl" />
+          {/* Image Right */}
+
+          <div className="relative -mt-1 ml-9 w-[120%] h-full">
+            <div className="absolute -inset-8 rounded-[40px]" />
             <div className="relative mx-auto w-full max-w-[920px] md:max-w-[920px]">
             
               <Image
                 src="/computerhome.svg"
                 alt="Computer Servicing"
-                width={900}
-                height={700}
+                width={500}
+                height={500}
                 className="h-auto w-full object-contain"
                 priority
               />
