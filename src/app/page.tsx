@@ -3,9 +3,9 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="bg-white" id="home">
+    <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-visible">
+      <section className="relative overflow-visible" id="home">
         <div className="pointer-events-none absolute inset-0 z-0 -translate-y-15 -translate-x-15">
           <Image
             src="/background.svg"
