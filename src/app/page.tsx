@@ -47,7 +47,7 @@ export default function Home() {
             </h1>
 
             <div className="mt-8 flex flex-col items-start gap-3">
-              <p className="mt-6 font-semibold max-w-xl text-lg leading-8 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] inline-block text-transparent bg-clip-text">
+              <p className="mt-9 font-semibold max-w-xl text-lg leading-8 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] inline-block text-transparent bg-clip-text">
             MS18 Computer Supplies & Services</p>
               
               <Link
