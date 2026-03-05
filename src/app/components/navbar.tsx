@@ -40,7 +40,7 @@ export default function Navbar() {
     } hover:text-slate-900`;
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100">
+    <header className="h-18 sticky top-0 z-50 bg-white/50 backdrop-blur border-slate-100">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="flex items-center gap-3 font-semibold tracking-tight text-slate-900">
           <Image
