@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import Services from "./components/services";
 
 export default function Home() {
   return (
@@ -91,67 +92,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="services" className="border-t border-slate-100 bg-slate-50/50 scroll-mt-24">
-        <div className="mx-auto max-w-6xl px-6 py-14">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900">Services</h2>
-              <p className="mt-2 text-sm text-slate-600">Everything you need to keep your computer running like new.</p>
-            </div>
-            <Link href="/#contact" className="text-sm font-semibold text-slate-700 hover:text-slate-900">
-              Get a quote
-            </Link>
-          </div>
+      <div>
+          
+          <Services />
 
-          <div className="mt-8 grid grid-cols-1 gap-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-                <h3 className="text-base font-semibold text-slate-900">Hardware Repair</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">Diagnostics, part replacement, overheating fixes, and more.</p>
-                <ul className="mt-4 list-disc list-inside text-sm text-slate-600">
-                  <li>Component replacement (RAM, HDD, SSD, GPU)</li>
-                  <li>Motherboard and power supply checks</li>
-                  <li>LCD screen and keyboard fixes</li>
-                  <li>Cooling / fan servicing</li>
-                </ul>
-              </div>
-              <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-                <h3 className="text-base font-semibold text-slate-900">Software Setup</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">OS installs, drivers, cleanup, and performance tuning.</p>
-                <ul className="mt-4 list-disc list-inside text-sm text-slate-600">
-                  <li>Windows / macOS / Linux installation</li>
-                  <li>App setup and configuration</li>
-                  <li>Startup cleanup and optimization</li>
-                  <li>Driver updates and compatibility checks</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-                <h3 className="text-base font-semibold text-slate-900">Data Recovery</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">Recover important files from disks, SSDs, and flash storage.</p>
-                <ul className="mt-4 list-disc list-inside text-sm text-slate-600">
-                  <li>Deleted file restoration</li>
-                  <li>Drive health check &amp; cloning</li>
-                  <li>SSD / flash recovery</li>
-                  <li>Basic RAID troubleshooting</li>
-                </ul>
-              </div>
-              <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-                <h3 className="text-base font-semibold text-slate-900">Security &amp; Virus Removal</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">Clean infections, lock down your system, and keep it protected.</p>
-                <ul className="mt-4 list-disc list-inside text-sm text-slate-600">
-                  <li>Malware scanning and removal</li>
-                  <li>Antivirus setup</li>
-                  <li>Browser cleanup</li>
-                  <li>Security hardening recommendations</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
 
       <section id="about" className="border-t border-slate-100 bg-white scroll-mt-24">
         <div className="mx-auto max-w-6xl px-6 py-14">

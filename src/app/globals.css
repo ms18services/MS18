@@ -36,3 +36,38 @@ body {
 .font-miama {
   font-family: "Miama", var(--font-mplus-2), ui-sans-serif, system-ui, sans-serif;
 }
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* move exactly 1 group width because track is 2 identical groups */
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+  will-change: transform;
+}
+
+.marquee-group {
+  display: flex;
+  width: max-content;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

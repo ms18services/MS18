@@ -7,6 +7,19 @@ import Image from 'next/image';
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState('');
 
+  const scrollToSection = (section: string) => (e: React.MouseEvent) => {
+  e.preventDefault();
+
+  const element = document.getElementById(section);
+
+  if (element) {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+};
+
   useEffect(() => {
     const sections = ['home', 'services', 'about', 'contact'];
     const observers: IntersectionObserver[] = [];
@@ -54,16 +67,19 @@ export default function Navbar() {
 
         <div className="flex items-center gap-6">
           <div className="hidden items-center gap-8 md:flex">
-            <Link href="/#home" className={linkClasses('home')}>
+            <Link href="#home" onClick={scrollToSection("home")} className={linkClasses("home")}>
               Home
             </Link>
-            <Link href="/#services" className={linkClasses('services')}>
+
+            <Link href="#services" onClick={scrollToSection("services")} className={linkClasses("services")}>
               Services
             </Link>
-            <Link href="/#about" className={linkClasses('about')}>
+
+            <Link href="#about" onClick={scrollToSection("about")} className={linkClasses("about")}>
               About
             </Link>
-            <Link href="/#contact" className={linkClasses('contact')}>
+
+            <Link href="#contact" onClick={scrollToSection("contact")} className={linkClasses("contact")}>
               Contact
             </Link>
           </div>
