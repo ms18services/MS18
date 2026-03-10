@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import Services from "./components/services";
+import About from "./components/about";
 
 export default function Home() {
   return (
@@ -98,38 +99,13 @@ export default function Home() {
 
       </div>
 
-      <section id="about" className="border-t border-slate-100 bg-white scroll-mt-24">
-        <div className="mx-auto max-w-6xl px-6 py-14">
-          <div className="rounded-3xl border border-slate-100 bg-gradient-to-br from-purple-50 via-white to-blue-50 px-8 py-12">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">About</h2>
-            <p className="mt-3 max-w-2xl text-slate-600">
-              Friendly, professional computer servicing with fast turnaround and clear communication.
-            </p>
-          </div>
+      <div>
+          
+          <About />
 
-          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:col-span-2">
-              <p className="text-sm leading-7 text-slate-600">
-                Welcome to Computer Servicing, your trusted partner for all your computer repair and maintenance needs. With over 10 years of experience in the industry, we have helped thousands of customers keep their devices running smoothly.
-              </p>
-              <p className="mt-5 text-sm leading-7 text-slate-600">
-                Our team focuses on practical solutions: clear diagnostics, honest recommendations, and quality parts. Whether you need a quick tune-up or a full system rebuild, we’ve got you covered.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-              <h3 className="text-sm font-semibold text-slate-900">Why choose us</h3>
-              <ul className="mt-4 list-disc list-inside text-sm text-slate-600">
-                <li>Certified technicians</li>
-                <li>Clear pricing</li>
-                <li>Fast turnaround</li>
-                <li>Warranty on repairs</li>
-                <li>Free basic diagnostics</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
 
+      
       <section id="contact" className="border-t border-slate-100 bg-slate-50/50 scroll-mt-24">
         <div className="mx-auto max-w-6xl px-6 py-14">
           <div className="rounded-3xl border border-slate-100 bg-gradient-to-br from-purple-50 via-white to-blue-50 px-8 py-12">
