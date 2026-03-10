@@ -33,7 +33,7 @@ export default function Home() {
         <div className="relative z-10 flex -mt-20 pt-10 mx-auto grid max-w-6xl grid-cols-1 items-center justify-center gap-10 px-6 md:grid-cols-[1fr_1.25fr]  h-170">
           <div className="pt-5">
             
-            <h1 className="-mt-25 w-[200%] text-[clamp(4.2rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tight text-slate-900  ">
+            <h1 className="-mt-25 w-[200%] text-[clamp(4.2rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tighter text-slate-900  ">
               <span className="block  text-[#404040] pt-2 bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%]  text-transparent bg-clip-text ">
                 <span className="font-miama font-thin inline-block align-baseline text-[2.9em] leading-[0.55]">W</span>
                 <span className="-ml-1">e</span>

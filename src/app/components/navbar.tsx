@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Navbar() {
-  const [activeSection, setActiveSection] = useState('');
+  const [activeSection, setActiveSection] = useState('home');
 
   const scrollToSection = (section: string) => (e: React.MouseEvent) => {
   e.preventDefault();
@@ -23,8 +23,6 @@ export default function Navbar() {
   useEffect(() => {
     const sections = ['home', 'services', 'about', 'contact'];
     const observers: IntersectionObserver[] = [];
-
-    setActiveSection('home'); // Default to home on load
 
     sections.forEach((section) => {
       const element = document.getElementById(section);
@@ -56,12 +54,12 @@ export default function Navbar() {
     <header className="h-18 sticky top-0 z-50 bg-white/50 backdrop-blur border-slate-100">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="flex group items-center gap-3 font-semibold tracking-tight text-slate-900">
-          <div className=' opacity-100 cursor-default group-hover:hidden transition-opacity duration-500'>
+          <div className=' opacity-100 cursor-default group-hover:hidden absolute z-19 translate-y-4 -translate-x-6.5 transition-opacity  duration-500'>
           <Image
             src="/ms18logo.svg"
             alt="Computer Servicing"
-            width={60}
-            height={60}
+            width={100}
+            height={100}
             priority
           />
           </div>

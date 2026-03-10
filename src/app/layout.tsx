@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { Geist_Mono, M_PLUS_2 } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";

@@ -1,7 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import MeetTheTeam from './meettheteam';
+import IPartners from './partners';
 
 export default function About() {
   return (
@@ -50,24 +49,15 @@ export default function About() {
 
           </div>
 
-          <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3">
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:col-span-2">
-              <p className="text-sm leading-7 text-slate-600">
-                Welcome to Computer Servicing, your trusted partner for all your computer repair and maintenance needs. With over 10 years of experience in the industry, we have helped thousands of customers keep their devices running smoothly.
-              </p>
-              <p className="mt-5 text-sm leading-7 text-slate-600">
-                Our team focuses on practical solutions: clear diagnostics, honest recommendations, and quality parts. Whether you need a quick tune-up or a full system rebuild, we’ve got you covered.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"> <h3 className="text-sm font-semibold text-slate-900">Why choose us</h3> <ul className="mt-4 list-disc list-inside text-sm text-slate-600">
-                <li>Certified technicians</li>
-                <li>Clear pricing</li>
-                <li>Fast turnaround</li>
-                <li>Warranty on repairs</li>
-                <li>Free basic diagnostics</li>
-              </ul>
-            </div>
-          </div>
+        <div>
+          <MeetTheTeam />
+        </div>
+
+         <div>
+          <IPartners />
+        </div>
+
+        
         </div>
       </section>
   );
