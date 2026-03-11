@@ -56,18 +56,50 @@ body {
   }
 }
 
+.marquee-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 20%,
+    #000 70%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 20%,
+    #000 70%,
+    transparent
+  );
+}
+
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee 25s linear infinite;
+  animation: marquee var(--marquee-duration, 25s) linear infinite;
   will-change: transform;
 }
 
 .marquee-track-reverse {
   display: flex;
   width: max-content;
-  animation: marquee-reverse 30s linear infinite;
+  animation: marquee-reverse var(--marquee-duration-reverse, 30s) linear infinite;
   will-change: transform;
+}
+
+.marquee-speed-partners {
+  --marquee-duration: 25s;
+  --marquee-duration-reverse: 25s;
+}
+
+.marquee-speed-license {
+  --marquee-duration: 45s;
+  --marquee-duration-reverse: 45s;
+}
+
+.marquee-pausable:hover .marquee-track,
+.marquee-pausable:hover .marquee-track-reverse {
+  animation-play-state: paused;
 }
 
 .marquee-group {

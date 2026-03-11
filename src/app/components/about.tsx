@@ -1,6 +1,8 @@
 'use client';
+import License from './license';
 import MeetTheTeam from './meettheteam';
 import IPartners from './partners';
+import TheJournal from './thejournal';
 
 export default function About() {
   return (
@@ -55,6 +57,10 @@ export default function About() {
 
          <div>
           <IPartners />
+        </div>
+
+        <div>
+          <TheJournal />
         </div>
 
         
