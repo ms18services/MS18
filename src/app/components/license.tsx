@@ -4,18 +4,17 @@ import Image from 'next/image'
 export default function License() {
     return (
         
-            <section className="marquee-speed-license w-full mx-auto py-15 mt-15 overflow-visible">
+            <section className="marquee-speed-license w-full mx-auto py-5 -mt-7 overflow-visible">
               <div className="mx-auto max-w-8xl px-6">
                         {/* window */}
                     
 
-                <h1 className="relative translate-x-[30%] text-[5em] -tracking-[8px] font-bold">
+                <h1 className="text-center text-[1.8em]  -tracking-[1px] font-bold">
                  
-                 <span className="relative z-20 ml-42 bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] text-transparent bg-clip-text">
+                 <span className="relative z-20 bg-gradient-to-r from-[#984CD3] via-[#522BC9] grayscale opacity-70 to-[#411563] to-[90%] text-transparent bg-clip-text hover:grayscale-0 transition-all duration-300 cursor-default hover:opacity-100">
                   Licenses & Permits.
                   </span>
-                  <img src="/windowpc.svg" alt="Window PC" className="scale-59 absolute right-30 -top-28 z-10" />
-
+                 
                 </h1>
               </div>
         

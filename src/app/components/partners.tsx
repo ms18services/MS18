@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function IPartners() {
   return (  
   
-    <section className="marquee-speed-partners w-full mx-auto -mt-5 py-5  scale-60">
+    <section className="marquee-speed-partners w-full mx-auto -mt-13 py-5  scale-60">
       <div className="mx-auto max-w-8xl px-6">
         <h1 className="mx-auto w-max grayscale whitespace-nowrap text-center text-[30px] -tracking-[2px] font-semibold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-5% via-50% to-100% bg-clip-text text-transparent cursor-default hover:grayscale-0 transition-all duration-300 ">
           MS18 Computer Supplies & Services Partners are:

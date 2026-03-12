@@ -62,6 +62,9 @@ export default function About() {
         <div>
           <TheJournal />
         </div>
+        <div>
+          <License />
+        </div>
 
         
         </div>
