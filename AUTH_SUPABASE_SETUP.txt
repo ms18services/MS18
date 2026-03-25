@@ -1,0 +1,265 @@
+NEXTAUTH + SUPABASE SETUP (MS18)
+
+This project currently has:
+- /journal page UI
+- /admin page UI (currently localStorage-based)
+
+Goal:
+- Use Supabase (Postgres + Storage) for scalable data
+- Use NextAuth for real authentication (email + password)
+- No public sign-up; only allow specific admin emails
+
+------------------------------------------------------------
+1) Environment variables (.env.local)
+------------------------------------------------------------
+Create a file named .env.local in the project root (same folder as package.json) and add:
+
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=3i2UeWz9rY4Yc0l1QW0U0rI8nJH0lK2cRzqV5m1x0c8
+
+NEXT_PUBLIC_SUPABASE_URL=https://qdbsqgseqmcvwiykmhgn.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<PASTE_YOUR_ANON_KEY_HERE>
+
+# Optional (only needed if you decide to bypass RLS on the server)
+# SUPABASE_SERVICE_ROLE_KEY=<KEEP_SECRET_SERVER_ONLY>
+
+------------------------------------------------------------
+2) Supabase Auth settings (Dashboard)
+------------------------------------------------------------
+In Supabase Dashboard:
+
+A) Disable signups
+- Authentication -> Providers -> Email
+- Turn OFF any setting like "Enable signups" / "Allow new users".
+
+B) Create the single admin user
+- Authentication -> Users -> Add user
+- Email: ms18@admin888.com
+- Password: ms18admin.888
+
+------------------------------------------------------------
+3) Database schema (run in Supabase SQL Editor)
+------------------------------------------------------------
+Create tables:
+
+-- journal posts
+create table if not exists public.journal_posts (
+  id text primary key,
+  category text not null,
+  title text not null,
+  body text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  author_id uuid null
+);
+
+-- keep updated_at current
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+drop trigger if exists journal_posts_set_updated_at on public.journal_posts;
+create trigger journal_posts_set_updated_at
+before update on public.journal_posts
+for each row
+execute function public.set_updated_at();
+
+-- post images
+create table if not exists public.journal_post_images (
+  id bigserial primary key,
+  post_id text not null references public.journal_posts(id) on delete cascade,
+  path text not null,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists journal_post_images_post_id_idx
+  on public.journal_post_images(post_id);
+
+------------------------------------------------------------
+4) Storage bucket for images (Dashboard)
+------------------------------------------------------------
+- Storage -> Create bucket
+- Bucket name: journal-images
+
+IMPORTANT (matches current code): set the bucket to PUBLIC for read.
+The current /journal page uses getPublicUrl(), so images must be publicly readable.
+
+Storage policies (required for uploads from /admin)
+------------------------------------------------------------
+Supabase Storage uses the table: storage.objects
+
+In SQL Editor, run:
+
+-- Allow public read of objects in journal-images (optional if bucket is PUBLIC, but safe to add)
+create policy "journal_images_public_read"
+on storage.objects
+for select
+to anon, authenticated
+using (bucket_id = 'journal-images');
+
+-- Allow authenticated uploads to journal-images
+create policy "journal_images_auth_insert"
+on storage.objects
+for insert
+to authenticated
+with check (bucket_id = 'journal-images');
+
+-- Allow authenticated deletes in journal-images
+create policy "journal_images_auth_delete"
+on storage.objects
+for delete
+to authenticated
+using (bucket_id = 'journal-images');
+
+NOTE: If you use the optional "admin role" setup (profiles table), you should replace
+the authenticated insert/delete policies with admin-only checks.
+
+------------------------------------------------------------
+5) RLS policies (Admin-only writes)
+------------------------------------------------------------
+Enable RLS:
+
+alter table public.journal_posts enable row level security;
+alter table public.journal_post_images enable row level security;
+
+Recommended policy setup (works with email+password + NextAuth allowlist):
+
+A) Allow PUBLIC READ (so /journal works without login)
+create policy "journal_posts_read" on public.journal_posts
+for select
+to anon, authenticated
+using (true);
+
+create policy "journal_post_images_read" on public.journal_post_images
+for select
+to anon, authenticated
+using (true);
+
+B) Allow WRITES ONLY for authenticated users
+NOTE: This is still enforced by NextAuth allowlist in the app.
+If you want DB-level admin-only enforcement, see section C.
+
+create policy "journal_posts_write_auth" on public.journal_posts
+for insert
+to authenticated
+with check (true);
+
+create policy "journal_posts_update_auth" on public.journal_posts
+for update
+to authenticated
+using (true)
+with check (true);
+
+create policy "journal_posts_delete_auth" on public.journal_posts
+for delete
+to authenticated
+using (true);
+
+create policy "journal_post_images_write_auth" on public.journal_post_images
+for insert
+to authenticated
+with check (true);
+
+create policy "journal_post_images_delete_auth" on public.journal_post_images
+for delete
+to authenticated
+using (true);
+
+C) Optional: Strict admin-only writes at DB level (recommended)
+1) Create a profiles table:
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  role text not null default 'user'
+);
+
+alter table public.profiles enable row level security;
+
+create policy "profiles_read_own" on public.profiles
+for select
+to authenticated
+using (auth.uid() = id);
+
+create policy "profiles_upsert_own" on public.profiles
+for insert
+to authenticated
+with check (auth.uid() = id);
+
+create policy "profiles_update_own" on public.profiles
+for update
+to authenticated
+using (auth.uid() = id)
+with check (auth.uid() = id);
+
+2) Set your admin role (run once, replace <ADMIN_USER_UUID>):
+insert into public.profiles (id, role)
+values ('<ADMIN_USER_UUID>', 'admin')
+on conflict (id) do update set role = 'admin';
+
+3) Update write policies to require admin role:
+-- Example for journal_posts insert:
+drop policy if exists "journal_posts_write_auth" on public.journal_posts;
+create policy "journal_posts_write_admin" on public.journal_posts
+for insert
+to authenticated
+with check (exists (
+  select 1 from public.profiles p
+  where p.id = auth.uid() and p.role = 'admin'
+));
+
+Repeat similarly for update/delete and journal_post_images.
+
+------------------------------------------------------------
+6) Install dependencies
+------------------------------------------------------------
+Run in project root:
+
+npm i next-auth @supabase/supabase-js
+
+NOTE: These dependencies have already been installed in this repo.
+
+------------------------------------------------------------
+7) NextAuth routes + admin protection
+------------------------------------------------------------
+Already added in this repo:
+- src/app/api/auth/[...nextauth]/route.ts
+- a Credentials provider that logs in via Supabase auth.signInWithPassword
+- allowlist check for email (only ms18@admin888.com)
+- middleware.ts to protect /admin
+
+Login page:
+- src/app/admin/login/page.tsx
+
+How it works:
+- Visiting /admin redirects to /admin/login unless you're signed in as an allowlisted email.
+
+------------------------------------------------------------
+8) Switch /journal and /admin data layer
+------------------------------------------------------------
+- /journal will fetch from Supabase tables
+- /admin will create/edit/delete posts in Supabase
+- Image uploads go to Storage bucket (journal-images)
+
+------------------------------------------------------------
+9) Run locally
+------------------------------------------------------------
+npm run dev
+
+Open:
+- http://localhost:3000/admin/login
+- http://localhost:3000/admin
+- http://localhost:3000/journal
+
+------------------------------------------------------------
+If something doesn’t work
+------------------------------------------------------------
+- Confirm .env.local values
+- Confirm Supabase Email provider enabled and signups disabled
+- Confirm the admin user exists in Supabase Auth
+- Check browser console + terminal logs

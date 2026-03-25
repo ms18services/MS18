@@ -33,7 +33,7 @@ export default function MeetTheTeam() {
   ];
 
   return (
-    <section className="mt-16">
+    <section className="-mt-20">
       <div className="mx-auto max-w-6xl px-6 mt-40">
         <div className="relative flex items-center justify-center py-10">
           <div className="pointer-events-none absolute  flex items-center justify-center">

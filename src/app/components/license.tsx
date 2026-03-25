@@ -16,80 +16,20 @@ export default function License() {
                   </span>
                  
                 </h1>
+
+                <div className="mt-10 grid grid-cols-1 gap-1 sm:grid-cols-3 scale-120">
+                  
+                        <img src="/license&permit.svg" alt="License 1" />
+                        <img src="/license&permit.svg" alt="License 1" />
+                        <img src="/license&permit.svg" alt="License 1" />
+                 
+                </div>
+
               </div>
         
 
             
-              <div className="marquee-pausable marquee-fade mt-10 relative left-1/2 w-screen -translate-x-1/2 overflow-hidden">
-                <div className="marquee-track">
-                  <div className="marquee-group gap-20 px-10">
-                    {[...Array(8)].map((_, i) => {
-                      const isGlobe = (i + 1) % 2 === 0;
-                      return (
-                        <Image
-                          key={`p1-${i}`}
-                          src={isGlobe ? "/computerhome.svg" : "/ms18logofull.svg"}
-                          alt={isGlobe ? "Partners" : ""}
-                          width={100}
-                          height={100}
-                          className="shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
-                          priority={i === 0}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="marquee-group gap-20 px-10" aria-hidden="true">
-                    {[...Array(8)].map((_, i) => {
-                      const isGlobe = (i + 1) % 2 === 0;
-                      return (
-                        <Image
-                          key={`p2-${i}`}
-                          src={isGlobe ? "/computerhome.svg" : "/ms18logofull.svg"}
-                          alt=""
-                          width={100}
-                          height={100}
-                          className="shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-        
-              <div className="marquee-pausable marquee-fade mt-8 relative left-1/2 w-screen -translate-x-1/2 overflow-hidden">
-                <div className="marquee-track-reverse">
-                  <div className="marquee-group gap-20 px-10">
-                    {[...Array(8)].map((_, i) => {
-                      const isGlobe = i % 2 === 0;
-                      return (
-                        <Image
-                          key={`p3-${i}`}
-                          src={isGlobe ? "/computerhome.svg" : "/ms18logofull.svg"}
-                          alt={isGlobe ? "Partners" : ""}
-                          width={200}
-                          height={200}
-                          className="shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="marquee-group gap-20 px-10" aria-hidden="true">
-                    {[...Array(8)].map((_, i) => {
-                      const isGlobe = i % 2 === 0;
-                      return (
-                        <Image
-                          key={`p4-${i}`}
-                          src={isGlobe ? "/computerhome.svg" : "/ms18logofull.svg"}
-                          alt=""
-                          width={200}
-                          height={200}
-                          className="shrink-0 grayscale hover:grayscale-0 transition-all duration-300"
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+              
 
             </section>
            

@@ -1,31 +1,40 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { createSupabaseAnonClient } from "@/lib/supabase";
 import SCarousel, { type ServiceCard } from "./ServicesCarousel"; // same folder
 
 export default function Services() {
-  const serviceCards: ServiceCard[] = [
-    {
-      title: "Hardware Repair",
-      description: "Diagnostics, part replacement, overheating fixes, and more.",
-      
-    },
-    {
-      title: "Software Setup",
-      description: "OS installs, drivers, cleanup, and performance tuning.",
-    
-    },
-    {
-      title: "Data Recovery",
-      description: "Recover important files from disks, SSDs, and flash storage.",
-      
-    },
-    {
-      title: "Security & Virus Removal",
-      description: "Clean infections, lock down your system, and keep it protected.",
-     
-    },
-  ];
+  const [serviceCards, setServiceCards] = useState<ServiceCard[]>([]);
+
+  useEffect(() => {
+    const run = async () => {
+      const supabase = createSupabaseAnonClient();
+      const { data, error } = await supabase
+        .from("services")
+        .select("id, title, description, details, icon_src, modal_image_src, pill_statuses, sort_order")
+        .order("sort_order", { ascending: true });
+
+      if (error || !data) {
+        setServiceCards([]);
+        return;
+      }
+
+      const mapped: ServiceCard[] = (data as any[]).map((r) => ({
+        title: r.title,
+        description: r.description,
+        details: r.details ?? undefined,
+        iconSrc: r.icon_src ?? undefined,
+        modalImageSrc: r.modal_image_src ?? undefined,
+        pillStatuses: (r.pill_statuses ?? []) as any,
+      }));
+
+      setServiceCards(mapped);
+    };
+
+    run();
+  }, []);
 
   return (
     <section
@@ -33,6 +42,8 @@ export default function Services() {
       className=" border-t border-slate-100 bg-slate-50/50 scroll-mt-24"
     >
       <div className="mx-auto max-w-6xl px-6 py-14">
+
+
         {/* marquee */}
         <div className="w-full flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div className="marquee-track">
@@ -64,9 +75,9 @@ export default function Services() {
           </div>
         </div>
 
-                    <div className="mt-20">
+                    <div className="-mt-8">
             <div className="mx-auto max-w-6xl px-6">
-                <SCarousel cards={serviceCards} />
+                <SCarousel cards={serviceCards} twoRows />
             </div>
             </div>
       </div>

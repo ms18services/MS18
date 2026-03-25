@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, M_PLUS_2 } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
+import Providers from "./providers";
 
 const mPlus2 = M_PLUS_2({
   variable: "--font-mplus-2",
@@ -26,10 +27,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-white">
       <body className={`${mPlus2.variable} ${geistMono.variable} antialiased bg-white text-slate-900 overflow-x-hidden`}>
-        <Navbar />
-        <main className="min-h-[calc(100vh-80px)] bg-white">
-          {children}
-        </main>
+        <Providers>
+          <Navbar />
+          <main className="min-h-[calc(100vh-80px)] bg-white">
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );

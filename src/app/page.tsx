@@ -2,10 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import Services from "./components/services";
 import About from "./components/about";
+import Contact from "./components/contact";
 
 export default function Home() {
   return (
     <div className="bg-white">
+        
       {/* Hero Section */}
 {/* 
       <div className="relativepointer-events-none absolute inset-0 z-10  -translate-x-79 translate-y-85 ">
@@ -105,51 +107,12 @@ export default function Home() {
 
       </div>
 
-      
-      <section id="contact" className="border-t border-slate-100 bg-slate-50/50 scroll-mt-24">
-        <div className="mx-auto max-w-6xl px-6 py-14">
-          <div className="rounded-3xl border border-slate-100 bg-gradient-to-br from-purple-50 via-white to-blue-50 px-8 py-12">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">Contact</h2>
-            <p className="mt-3 max-w-2xl text-slate-600">
-              Tell us what you need help with. We’ll reply with availability and a quick estimate.
-            </p>
-          </div>
+      <div>
+          
+          <Contact />
 
-          <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2">
-            <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-900">Get In Touch</h3>
-              <p className="mt-2 text-slate-600">Have a question or need service? Contact us today!</p>
-              <div className="mt-6 space-y-2 text-slate-600">
-                <p>
-                  <strong className="text-slate-900">Phone:</strong> (123) 456-7890
-                </p>
-                <p>
-                  <strong className="text-slate-900">Email:</strong> info@computerservicing.com
-                </p>
-                <p>
-                  <strong className="text-slate-900">Address:</strong> 123 Tech Street, Computer City, CC 12345
-                </p>
-              </div>
-            </div>
-
-            <form className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-700" htmlFor="name">Name</label>
-                <input type="text" id="name" className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:border-slate-300 focus:ring-2 focus:ring-purple-100" />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-700" htmlFor="email">Email</label>
-                <input type="email" id="email" className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:border-slate-300 focus:ring-2 focus:ring-purple-100" />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-700" htmlFor="message">Message</label>
-                <textarea id="message" rows={4} className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:border-slate-300 focus:ring-2 focus:ring-purple-100"></textarea>
-              </div>
-              <button type="submit" className="inline-flex h-11 items-center justify-center rounded-full bg-slate-900 px-6 text-sm font-semibold text-white hover:bg-slate-800">Send Message</button>
-            </form>
-          </div>
-        </div>
-      </section>
+      </div>
+     
     </div>
   );
 }
