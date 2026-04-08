@@ -358,11 +358,12 @@ export default function SCarousel({
                   >
                     <span className="relative inline-flex h-7 items-center justify-center">
                       <span className="absolute left-0 top-0 h-7 w-7 rounded-full bg-[#6D28D9] transition-all duration-500 ease-out group-hover:w-[135px]" />
+                      
                       <span className="relative z-10 inline-flex h-7 w-7 items-center justify-center">
-                        <span className="absolute left-[10px] right-[22px] top-1/2 z-0 h-[2px] -translate-y-1/2 origin-left scale-x-0 bg-white transition-transform duration-300 ease-out delay-150 group-hover:scale-x-100" />
+                        <span className="absolute left-[10px] right-[22px] top-1/2 z-0 h-[2px] -translate-y-1/2 origin-left scale-x-0 bg-white transition-transform duration-300 ease-in-out delay-150 group-hover:scale-x-100" />
                         <svg
                           viewBox="0 0 24 24"
-                          className="relative z-10 h-4 w-4 text-white transition-transform duration-300 ease-out delay-100 group-hover:translate-x-2.5"
+                          className="relative z-10 h-4 w-4 text-white transition-transform duration-300 ease-out delay-140 group-hover:translate-x-3.5"
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="2"
@@ -371,7 +372,11 @@ export default function SCarousel({
                         >
                           <path d="M8 5l8 7-8 7" />
                         </svg>
+                       
                       </span>
+
+                       <div className="absolute rounded-full h-[1.5px] w-3 bg-white translate-y-[0.8px] translate-x-[9.4px] scale-x-0 origin-left transition-transform duration-700 ease-in-out group-hover:scale-x-100" />
+                      
                     </span>
 
                     <span className="relative z-10 text-[#142699] transition-colors duration-300 ease-out delay-300 group-hover:text-white">

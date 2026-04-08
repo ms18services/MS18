@@ -3,9 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
 
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-mplus-2);
@@ -23,6 +21,13 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: "M PLUS 2", Arial, Helvetica, sans-serif;
+}
+.bg-clip-text .split-word {
+  background: inherit;
+  -webkit-background-clip: inherit;
+  background-clip: inherit;
+  color: inherit;
+  -webkit-text-fill-color: inherit;
 }
 
 @font-face {

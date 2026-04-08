@@ -3,8 +3,106 @@ import License from './license';
 import MeetTheTeam from './meettheteam';
 import IPartners from './partners';
 import TheJournal from './thejournal';
+import gsap from 'gsap';
+import { useEffect, useRef } from 'react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
+import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
+
+gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
+
 
 export default function About() {
+
+  const abouttext = useRef<HTMLDivElement | null>(null);
+  const head1 = useRef<HTMLSpanElement | null>(null);
+  const head2 = useRef<HTMLSpanElement | null>(null);
+  const head3 = useRef<HTMLSpanElement | null>(null);
+  const paragraph1 = useRef<HTMLParagraphElement | null>(null);
+
+  useEffect(() => {
+    if (abouttext.current) {
+
+
+
+      const split = new SplitText(abouttext.current, { type: 'words' });
+      
+      const animation = gsap.from(split.words, {
+        
+        y: -100,
+        opacity: 0,
+        rotation: "random(-80, 80)",
+        duration: 0.7,
+        ease: "back",
+        stagger: 0.15,
+        
+      });
+
+
+       return () => {
+      split.revert();
+      animation.revert();
+    };
+
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!head1.current || !head2.current || !head3.current || !paragraph1.current) return; 
+
+    const tl = gsap.timeline({defaults: {ease:"none"}});
+
+    tl.to(head1.current, {
+      scrambleText: {
+        
+      text: "MS18 COMPUTER SUPPLIES & SERVICES", 
+      chars: "upperCase", 
+      speed: 0.5, 
+      revealDelay: 0.5 
+      }
+    },0    
+    );  
+      
+      tl.to(head2.current, {
+        scrambleText: {
+          text: "M&S MINI COMPUTER SUPPLIES",
+          chars: "upperCase",
+          speed: 0.5,
+          revealDelay: 0.5,
+        },
+      },0);
+      
+      tl.to(head3.current, {
+        scrambleText: {
+          text: "OUR VISION",
+          chars: "upperCase",
+          speed: 0.5,
+          revealDelay: 0.5,
+        },
+      },0);
+      
+      tl.to(paragraph1.current, {
+        scrambleText: {
+          text: "OUR VALUES",
+          chars: "upperCase",
+          speed: 0.5,
+          revealDelay: 0.5,
+        },
+      });
+    
+
+
+
+      
+
+
+    
+    
+  }, []);
+  
+  
+
+
   return (
 
     //about us
@@ -46,10 +144,10 @@ export default function About() {
 
            <div className=" h-80 font-medium grid grid-cols-2 gap-5  max-w-2xl text-slate-600 mt-25 ">
              <h1 className="text-justify text-[0.9em] indent-7 -tracking-[0.07 em] ">
-             <span className="">  <span className='font-bold bg-gradient-to-b from-[#9A42E6]  to-[#562580] from-20% to-100% bg-clip-text text-transparent'> MS18  COMPUTER SUPPLIES & SERVICES </span> (formerly known as <span className='font-bold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text'>M&S MINI COMPUTER SUPPLIES </span> )</span> was established in August 2003. The company was formed by siblings having vivid experience and wide exposure to Information Technology. Since then, the company has steadily grown by delivering reliable computer products.<br /> <br />  
+             <span className="">  <span className='font-bold bg-gradient-to-b from-[#9A42E6]  to-[#562580] from-20% to-100% bg-clip-text text-transparent'></span> (formerly known as <span ref={head2} className='font-bold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text'>M&S MINI COMPUTER SUPPLIES </span> )</span> was established in August 2003. The company was formed by siblings having vivid experience and wide exposure to Information Technology. Since then, the company has steadily grown by delivering reliable computer products.<br /> <br />  
              </h1>
 
-              <p className='text-justify text-[0.9em]'> The resource personnel working in the company have been consistently providing reliable support services. The bottom line of the company is building a  <span className="font-bold bg-gradient-to-b from-[#9A42E6]  to-[#562580] from-20% to-100% bg-clip-text text-transparent"> Long-term Business Partnership</span> with its clients where interpersonal relationships, reliability, assured quality and target oriented in <span className='font-bold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text'> Modern Technology.</span></p>
+              <p  className='text-justify text-[0.9em]'> The resource personnel working in the company have been consistently providing reliable support services. The bottom line of the company is building a  <span className="font-bold bg-gradient-to-b from-[#9A42E6]  to-[#562580] from-20% to-100% bg-clip-text text-transparent"> Long-term Business Partnership</span> with its clients where interpersonal relationships, reliability, assured quality and target oriented in <span className='font-bold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text'> Modern Technology.</span></p>
 
              {/* <p className="text-justify text-[0.9em]">
                 We are genuinely client focused and continually seeking improvement in our products. We are determined to succed and draw inspiration from challenges. <br /> <br /> <span className="font-bold">MS18 COMPUTER SUPPLIES & SERVICES</span> provides professional service and orientation. All our staff is highly trained and has many years of experience, and they are always available for all your queries and service requests.

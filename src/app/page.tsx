@@ -1,10 +1,54 @@
+'use client'
+
 import Link from "next/link";
 import Image from "next/image";
 import Services from "./components/services";
 import About from "./components/about";
 import Contact from "./components/contact";
+import { TextAnimation } from "./components/TextAnimation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
+
+  const headRef = useRef<HTMLHeadingElement | null>(null);
+  const [ctaVisible, setCtaVisible] = useState(false);
+  const [ctaInView, setCtaInView] = useState(true);
+  const ctaRef = useRef<HTMLAnchorElement | null>(null);
+
+  const handleTextAnimationComplete = useCallback(() => {
+    setCtaVisible(true);
+  }, []);
+
+  useEffect(() => {
+    const el = ctaRef.current;
+    if (!el) return;
+
+    const computeInView = () => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      const visiblePx = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      return visiblePx / vh;
+    };
+
+    const initialRatio = computeInView();
+    setCtaInView(initialRatio > 0);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        setCtaInView(entry.isIntersecting);
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -10% 0px" },
+    );
+
+    io.observe(el);
+    window.requestAnimationFrame(() => setCtaInView(computeInView() > 0));
+    return () => io.disconnect();
+  }, []);
+  
+
+
   return (
     <div className="bg-white">
         
@@ -33,36 +77,44 @@ export default function Home() {
         </div> */}
         
         <div className="relative z-10 flex -mt-20 pt-10 mx-auto grid max-w-6xl grid-cols-1 items-center justify-center gap-10 px-6 md:grid-cols-[1fr_1.25fr]  h-170">
-          <div className="pt-5">
+          <h1 ref={headRef} className="pt-5">
             
-            <h1 className="-mt-25 w-[200%] text-[clamp(4.2rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tighter text-slate-900  ">
-              <span className="block  text-[#404040] pt-2 bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%]  text-transparent bg-clip-text ">
-                <span className="font-miama font-thin inline-block align-baseline text-[2.9em] leading-[0.55]">W</span>
-                <span className="-ml-1">e</span>
-                <span className="ml-2">Focus on</span>
+            <div  className="-mt-25 w-[200%] text-[clamp(4.2rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tighter text-slate-900  ">
+              <span className="block  text-[#522BC9] pt-2  ">
+                <span className="font-miama font-thin inline-block align-baseline text-[2.9em] leading-[0.55] ">W</span>
+                <span className="-ml-1 text-[#522BC9]">e</span>
+                <span className="ml-2 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] inline-block text-transparent bg-clip-text">Focus on</span>
               </span>
                
               <span className="block -mt-[0.20em]">
-                <span className="text-[#522BC9]">your</span>
+                <span className="text-[#522BC9] ">your</span>
                 
-                <span className="text-blue-600"> Computers</span>
+                <span className="text-[#2767BC]"> Computers</span>
               </span>
-              <span className="block mt-[0.15em] text-blue-700">Needs.</span>
-            </h1>
+              <span className="block mt-[0.15em] bg-gradient-to-br from-[#2767BC] to-[#142699] bg-clip-text text-transparent py-1">Needs.</span>
+            </div>
 
+            
+          
+  
             <div className="mt-8 flex flex-col items-start gap-3">
               <p className="mt-9 font-semibold max-w-xl text-lg leading-8 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] inline-block text-transparent bg-clip-text">
             MS18 Computer Supplies & Services</p>
               
               <Link
                 href="/contact"
-                className="opacity-65 hover:opacity-100 group inline-flex h-7 items-center justify-center gap-1 rounded-full border border-black bg-white px-3 text-xs font-medium text-slate-900 shadow-sm transition hover:bg-slate-50"
+                ref={ctaRef}
+                className={`group inline-flex h-7 items-center justify-center gap-1 rounded-full border bg-white px-3 text-xs font-medium text-slate-900 shadow-sm transition-all duration-500 hover:bg-slate-50 ${
+                  ctaVisible && ctaInView
+                    ? "opacity-65 hover:opacity-100 border-black"
+                    : "opacity-0 border-transparent pointer-events-none"
+                }`}
               >
                 <span>Find out more below.</span>
                 <svg
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="h-4 w-4 text-[#404040]"
+                  className={`h-4 w-4 text-[#404040] transition-opacity duration-500 ${ctaVisible && ctaInView ? "opacity-100" : "opacity-0"}`}
                   aria-hidden="true"
                 >
                   <path
@@ -73,8 +125,10 @@ export default function Home() {
                 </svg>
               </Link>
            </div>
-          </div>
-
+           
+      
+          </h1>
+           <TextAnimation target={headRef} onComplete={handleTextAnimationComplete} />
           {/* Image Right */}
 
           <div className="relative w-[135%] h-[80%] -translate-y-19 -translate-x-5  ">
