@@ -4,6 +4,7 @@ import Link from "next/link";
 import Services from "./components/services";
 import About from "./components/about";
 import Contact from "./components/contact";
+import Image from "next/image";
 import { TextAnimation } from "./components/TextAnimation";
 import Hero3D from "./components/Hero3D";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -77,7 +78,7 @@ export default function Home() {
         </div> */}
         
         <div className="  flex  pt-25 mx-auto grid max-w-6xl grid-cols-1 items-center justify-center gap-2 px-6 grid-cols-[1fr_1.25fr]  h-150">
-          <h1 ref={headRef} className="pt-10 z-20 size-5  w-140 h-100 size-20 -ml-10">
+          <h1 ref={headRef} className="pt-18 z-20 size-5  w-140 h-100 size-20 -ml-10">
             
             <div  className="-mt-25 w-[200%] text-[clamp(5rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tighter text-slate-900  ">
               <span className="block  text-[#522BC9] pt-2  ">
@@ -96,8 +97,7 @@ export default function Home() {
 
             
           
-  
-            <div className="mt-8 flex flex-col items-start gap-3">
+            <div className="mt-2 flex flex-col items-start gap-1">
               <p className="mt-9 font-semibold max-w-xl text-lg leading-8 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] inline-block text-transparent bg-clip-text">
             MS18 Computer Supplies & Services</p>
               
@@ -124,6 +124,8 @@ export default function Home() {
                   />
                 </svg>
               </Link>
+
+              
            </div>
            
       
@@ -132,9 +134,88 @@ export default function Home() {
           {/* Image Right */}
 
           <div className="relative -mt-4  ">
+
+                <div className="absolute inset-0 flex items-center justify-center z-9 w-220 mt-17 -ml-30">
+                  <div>
+                  <Image
+                    src="/homepagebackground.svg"
+                    alt="Computer Servicing"
+                    width={550}
+                    height={550}
+                    className="h-auto w-full object-contain bg-intro-float2"
+                    priority
+                  />
+                  </div>
+                
+              </div>
+
+              <div className="absolute inset-0 flex items-center justify-center z-9 w-50 -mt-90 ml-20">
+                  <div>
+                  <img
+                    src="/cd-windows.gif"
+                    alt="Computer Servicing"
+                    width={500}
+                    height={500}
+                    className="h-auto w-full object-contain gif-intro-float"
+                    
+                  />
+                  </div>
+                
+              </div>
+
+
+
+              <div className="absolute inset-0 flex items-center justify-center z-20 w-35  -mb-65 ml-25">
+                  <div>
+                  <img
+                    src="/dino.gif"
+                    alt="Computer Servicing"
+                    width={500}
+                    height={500}
+                    className="h-auto w-full object-contain gif-intro-float"
+                    
+                  />
+                  </div>
+                
+              </div>
+
+
+              <div className="absolute inset-0 flex items-center justify-center z-20 w-30  -mb-50 ml-102">
+                  <div>
+                  <img
+                    src="/mouse_clicker.svg"
+                    alt="Computer Servicing"
+                    width={500}
+                    height={500}
+                    className="h-auto w-full object-contain gif-intro-float"
+                    
+                  />
+                  </div>
+                
+              </div>
+
+
+
+              <div className="absolute inset-0 flex items-center justify-center z-20 w-23 -mt-100 ml-109">
+                  <div>
+                  <img
+                    src="/microsoft-computer.gif"
+                    alt="Computer Servicing"
+                    width={500}
+                    height={500}
+                    className="h-auto w-full object-contain gif-intro-float"
+                    
+                  />
+                  </div>
+                
+              </div>
+
+
             <div className="absolute z-10" />
-            <div className=" absolute z-11 mx-auto w-190 h-150 -translate-x-10 -mt-90 ">
+            <div className=" absolute z-11 mx-auto w-190 h-150 -translate-x-10 -mt-96 ">
               <Hero3D />
+
+              
 
             </div>
 
