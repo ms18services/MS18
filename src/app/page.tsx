@@ -1,11 +1,11 @@
 'use client'
 
 import Link from "next/link";
-import Image from "next/image";
 import Services from "./components/services";
 import About from "./components/about";
 import Contact from "./components/contact";
 import { TextAnimation } from "./components/TextAnimation";
+import Hero3D from "./components/Hero3D";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
@@ -76,14 +76,14 @@ export default function Home() {
           />
         </div> */}
         
-        <div className="relative z-10 flex -mt-20 pt-10 mx-auto grid max-w-6xl grid-cols-1 items-center justify-center gap-10 px-6 md:grid-cols-[1fr_1.25fr]  h-170">
-          <h1 ref={headRef} className="pt-5">
+        <div className="  flex  pt-25 mx-auto grid max-w-6xl grid-cols-1 items-center justify-center gap-2 px-6 grid-cols-[1fr_1.25fr]  h-150">
+          <h1 ref={headRef} className="pt-10 z-20 size-5  w-140 h-100 size-20 -ml-10">
             
-            <div  className="-mt-25 w-[200%] text-[clamp(4.2rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tighter text-slate-900  ">
+            <div  className="-mt-25 w-[200%] text-[clamp(5rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tighter text-slate-900  ">
               <span className="block  text-[#522BC9] pt-2  ">
                 <span className="font-miama font-thin inline-block align-baseline text-[2.9em] leading-[0.55] ">W</span>
                 <span className="-ml-1 text-[#522BC9]">e</span>
-                <span className="ml-2 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] inline-block text-transparent bg-clip-text">Focus on</span>
+                <span className="ml-2 text-[#522BC9] inline-block ">Focus on</span>
               </span>
                
               <span className="block -mt-[0.20em]">
@@ -131,20 +131,13 @@ export default function Home() {
            <TextAnimation target={headRef} onComplete={handleTextAnimationComplete} />
           {/* Image Right */}
 
-          <div className="relative w-[135%] h-[80%] -translate-y-19 -translate-x-5  ">
-            <div className="absolute -inset-0rounded-[40px]" />
-            <div className=" relative mx-auto w-full max-w-[960px] md:max-w-[920px]">
-            
-              <Image
-                src="/computerhome.svg"
-                alt="Computer Servicing"
-                width={550}
-                height={550}
-                className="h-auto w-full object-contain"
-                priority
-              />
+          <div className="relative -mt-4  ">
+            <div className="absolute z-10" />
+            <div className=" absolute z-11 mx-auto w-190 h-150 -translate-x-10 -mt-90 ">
+              <Hero3D />
 
             </div>
+
           </div>
         </div>
       </section>

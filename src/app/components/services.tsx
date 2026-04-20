@@ -2,59 +2,55 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { createSupabaseAnonClient } from "@/lib/supabase";
 import SCarousel, { type ServiceCard } from "./ServicesCarousel"; // same folder
 import DirectionalMarquee from "./DirectionalMarquee";
+import fallbackServices from "@/data/services.json";
 
 export default function Services() {
   const [serviceCards, setServiceCards] = useState<ServiceCard[]>([]);
   const marqueeWrapRef = useRef<HTMLDivElement | null>(null);
   const [marqueeVisible, setMarqueeVisible] = useState(false);
 
-  const fallbackCards: ServiceCard[] = [
-    {
-      title: "Computer Repair",
-      description: "Diagnostics and repair for desktops and laptops.",
-      details: "Diagnostics and repair for desktops and laptops.",
-      pillStatuses: ["available", "on_site"],
-    },
-    {
-      title: "IT Support",
-      description: "On-site and remote support for common IT issues.",
-      details: "On-site and remote support for common IT issues.",
-      pillStatuses: ["available", "remote"],
-    },
-    {
-      title: "Network Setup",
-      description: "Router, Wi‑Fi, and small office network setup.",
-      details: "Router, Wi‑Fi, and small office network setup.",
-      pillStatuses: ["available", "on_site"],
-    },
-  ];
+  const fallbackCards: ServiceCard[] = (Array.isArray(fallbackServices) ? fallbackServices : []).map(
+    (r: any) => ({
+      title: String(r?.title ?? ""),
+      description: String(r?.description ?? ""),
+      details: typeof r?.details === "string" ? r.details : undefined,
+      iconSrc: typeof r?.icon_src === "string" ? r.icon_src : undefined,
+      modalImageSrc: typeof r?.modal_image_src === "string" ? r.modal_image_src : undefined,
+      pillStatuses: (r?.pill_statuses ?? []) as any,
+    })
+  );
 
   useEffect(() => {
     const run = async () => {
-      const supabase = createSupabaseAnonClient();
-      const { data, error } = await supabase
-        .from("services")
-        .select("id, title, description, details, icon_src, modal_image_src, pill_statuses, sort_order")
-        .order("sort_order", { ascending: true });
+      try {
+        const res = await fetch("/api/services", { method: "GET", cache: "no-store" });
+        const json = await res.json().catch(() => ({}));
 
-      if (error || !data) {
+        if (!res.ok) {
+          setServiceCards(fallbackCards);
+          return;
+        }
+
+        const services = Array.isArray(json?.services) ? (json.services as any[]) : [];
+        const mapped: ServiceCard[] = services
+          .slice()
+          .sort((a, b) => (Number(a?.sort_order ?? 0) || 0) - (Number(b?.sort_order ?? 0) || 0))
+          .map((r) => ({
+            title: String(r?.title ?? ""),
+            description: String(r?.description ?? ""),
+            details: typeof r?.details === "string" ? r.details : undefined,
+            iconSrc: typeof r?.icon_src === "string" ? r.icon_src : undefined,
+            modalImageSrc: typeof r?.modal_image_src === "string" ? r.modal_image_src : undefined,
+            pillStatuses: (r?.pill_statuses ?? []) as any,
+          }))
+          .filter((c) => Boolean(c.title) && Boolean(c.description));
+
+        setServiceCards(mapped.length ? mapped : fallbackCards);
+      } catch {
         setServiceCards(fallbackCards);
-        return;
       }
-
-      const mapped: ServiceCard[] = (data as any[]).map((r) => ({
-        title: r.title,
-        description: r.description,
-        details: r.details ?? undefined,
-        iconSrc: r.icon_src ?? undefined,
-        modalImageSrc: r.modal_image_src ?? undefined,
-        pillStatuses: (r.pill_statuses ?? []) as any,
-      }));
-
-      setServiceCards(mapped.length ? mapped : fallbackCards);
     };
 
     run();

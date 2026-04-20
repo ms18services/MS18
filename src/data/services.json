@@ -1,0 +1,92 @@
+[
+  {
+    "id": "svc-hardware-repair",
+    "title": "Hardware Repair",
+    "description": "Diagnostics, part replacement, overheating fixes, and more.",
+    "details": "We'll inspect your device, identify faulty components, and recommend the best fix—repair or replacement. Common jobs include PC Desktop, Laptop, Notebook, Tablet, Smart Phone, Monitor, AIO Printers, AVR, UPS, FAX Machine, Multimedia Speaker & Etc.",
+    "icon_src": "/MS18ServicesIcons/hardware repair.svg",
+    "modal_image_src": "/about-image.jpg",
+    "pill_statuses": ["available", "on_site"],
+    "sort_order": 0
+  },
+  {
+    "id": "svc-computer-maintenance",
+    "title": "Computer Maintenance",
+    "description": "OS installs, drivers, cleanup, and performance tuning.",
+    "details": "We’ll inspect your system and optimize performance. Common jobs include virus removal, system cleanup, updates, thermal cleaning, and troubleshooting.",
+    "icon_src": "/MS18ServicesIcons/computer maintenance.svg",
+    "modal_image_src": "/about-image.jpg",
+    "pill_statuses": ["available", "on_site"],
+    "sort_order": 1
+  },
+  {
+    "id": "svc-access-control-door-locks",
+    "title": "Access Control (Door Locks)",
+    "description": "Secure your property with modern access control systems.",
+    "details": "We’ll install and configure access control systems. Common jobs include door locks, biometric/RFID setup, user access control, and maintenance.",
+    "icon_src": "/MS18ServicesIcons/access control.svg",
+    "modal_image_src": "/about-image.jpg",
+    "pill_statuses": ["available", "on_site"],
+    "sort_order": 2
+  },
+  {
+    "id": "svc-in-house-services",
+    "title": "In House Services",
+    "description": "Provide on-site technical support at your location.",
+    "details": "We’ll provide on-site support for convenience. Common jobs include installation, repair, maintenance, and troubleshooting of IT equipment.",
+    "icon_src": "/MS18ServicesIcons/inhouse services.svg",
+    "modal_image_src": "/about-image.jpg",
+    "pill_statuses": ["available", "on_site"],
+    "sort_order": 3
+  },
+  {
+    "id": "svc-software-licensed-installation",
+    "title": "Software Licensed Installation",
+    "description": "Install licensed software securely.",
+    "details": "We’ll install and configure licensed software for secure use. Common jobs include OS installation, drivers, antivirus, activation, and updates.",
+    "icon_src": "/MS18ServicesIcons/softwarelicensed.svg",
+    "modal_image_src": "/about-image.jpg",
+    "pill_statuses": ["available", "on_site", "remote"],
+    "sort_order": 4
+  },
+  {
+    "id": "svc-internet-wifi-setups",
+    "title": "Internet/Wifi Setups",
+    "description": "Router setup, range improvements, and stable connectivity fixes.",
+    "details": "We’ll assess your location, install and configure your router, and optimize signal coverage. Common jobs include router/modem setup, cabling, WiFi extenders, and connectivity troubleshooting for various devices.",
+    "icon_src": "/MS18ServicesIcons/wifi.svg",
+    "modal_image_src": "/22be8c3a-bb7f-4c2e-b4e1-e9dc25c3af5f.jfif",
+    "pill_statuses": ["available", "on_site"],
+    "sort_order": 5
+  },
+  {
+    "id": "svc-cctv-installation",
+    "title": "CCTV Installation",
+    "description": "Camera installation, cabling, and full system configuration.",
+    "details": "We plan camera placement, run and tidy cables, mount cameras, and configure the recorder/app for remote viewing. We'll also set motion alerts, recording schedules, and make sure your system is secure and reliable.",
+    "icon_src": "/MS18ServicesIcons/cctv installation.svg",
+    "modal_image_src": "/about-image.jpg",
+    "pill_statuses": ["available", "on_site"],
+    "sort_order": 6
+  },
+  {
+    "id": "svc-data-recovery",
+    "title": "Data Recovery",
+    "description": "Recover important files from disks, SSDs, and flash storage.",
+    "details": "We’ll diagnose your device and apply safe recovery methods. Common jobs include recovering files from HDD, SSD, USB drives, memory cards, and corrupted or formatted systems.",
+    "icon_src": "/MS18ServicesIcons/data recover.svg",
+    "modal_image_src": "/about-image.jpg",
+    "pill_statuses": ["available", "on_site", "remote"],
+    "sort_order": 7
+  },
+  {
+    "id": "svc-network-configuration",
+    "title": "Network Configuration",
+    "description": "Dust cleaning, thermal repaste, and performance health checks.",
+    "details": "We configure routers/mesh systems, improve signal coverage, troubleshoot slow or unstable connections, and secure your network (passwords, firmware updates, and safe settings).",
+    "icon_src": "/MS18ServicesIcons/networkConfig.svg",
+    "modal_image_src": "/about-image.jpg",
+    "pill_statuses": ["available", "on_site", "remote"],
+    "sort_order": 8
+  }
+]

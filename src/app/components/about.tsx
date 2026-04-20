@@ -194,9 +194,9 @@ export default function About() {
         <div>
           <TheJournal />
         </div>
-        <div>
+        {/* <div>
           <License />
-        </div>
+        </div> */}
 
         
         </div>

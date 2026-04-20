@@ -69,7 +69,7 @@ export default function AdminPage() {
   const [services, setServices] = useState<ServiceRow[]>([]);
   const [servicesError, setServicesError] = useState<string>('');
   const [savingServices, setSavingServices] = useState(false);
-  const [deletedServiceIds, setDeletedServiceIds] = useState<Set<string>>(new Set());
+  const [servicesSha, setServicesSha] = useState<string>('');
   const [newService, setNewService] = useState<Partial<ServiceRow>>({
     title: '',
     description: '',
@@ -126,18 +126,25 @@ export default function AdminPage() {
 
   const fetchServices = async () => {
     setServicesError('');
-    const supabase = createSupabaseAnonClient();
-    const { data, error: fetchError } = await supabase
-      .from('services')
-      .select('id, title, description, details, icon_src, modal_image_src, pill_statuses, sort_order')
-      .order('sort_order', { ascending: true });
-
-    if (fetchError || !data) {
+    try {
+      const res = await fetch('/api/admin/services', { method: 'GET', cache: 'no-store' });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setServices([]);
+        setServicesError(json?.error || 'Failed to load services');
+        return;
+      }
+      const nextServices = Array.isArray(json?.services) ? (json.services as ServiceRow[]) : [];
+      setServices(
+        nextServices
+          .slice()
+          .sort((a, b) => (Number(a.sort_order ?? 0) || 0) - (Number(b.sort_order ?? 0) || 0))
+      );
+      setServicesSha(typeof json?.sha === 'string' ? json.sha : '');
+    } catch (e: any) {
       setServices([]);
-      return;
+      setServicesError(e?.message ?? 'Failed to load services');
     }
-
-    setServices(data as unknown as ServiceRow[]);
   };
 
   const toggleServicePill = (id: string, pill: ServicePillStatus) => {
@@ -196,7 +203,6 @@ export default function AdminPage() {
 
   const deleteService = (id: string) => {
     setServices((prev) => prev.filter((s) => s.id !== id));
-    setDeletedServiceIds((prev) => new Set(prev).add(id));
   };
 
   const uploadServiceImage = async (file: File, type: 'icon' | 'modal'): Promise<string | null> => {
@@ -277,24 +283,12 @@ export default function AdminPage() {
 
     setSavingServices(true);
     try {
-      const supabaseUser = createSupabaseUserClient(accessToken);
-
-      // Delete removed services from Supabase
-      if (deletedServiceIds.size > 0) {
-        const { error: deleteError } = await supabaseUser
-          .from('services')
-          .delete()
-          .in('id', Array.from(deletedServiceIds));
-
-        if (deleteError) {
-          setServicesError(`Failed to delete services: ${deleteError.message}`);
-          return;
-        }
-        setDeletedServiceIds(new Set());
+      if (!servicesSha) {
+        setServicesError('Missing SHA. Refresh the page and try again.');
+        return;
       }
 
-      // Upsert current services
-      const payload = services.map((s) => ({
+      const payload = services.map((s, idx) => ({
         id: s.id,
         title: s.title,
         description: s.description,
@@ -302,19 +296,26 @@ export default function AdminPage() {
         icon_src: s.icon_src ?? null,
         modal_image_src: s.modal_image_src ?? null,
         pill_statuses: (s.pill_statuses ?? []) as any,
-        sort_order: s.sort_order ?? 0,
-        updated_at: new Date().toISOString(),
+        sort_order: idx,
       }));
 
-      const { error: upsertError } = await supabaseUser
-        .from('services')
-        .upsert(payload as any, { onConflict: 'id' });
+      const res = await fetch('/api/admin/services', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          services: payload,
+          sha: servicesSha,
+          message: `Update services (${new Date().toISOString()})`,
+        }),
+      });
 
-      if (upsertError) {
-        setServicesError(`Failed to save services: ${upsertError.message}`);
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setServicesError(json?.error || 'Failed to save services');
         return;
       }
 
+      if (typeof json?.sha === 'string') setServicesSha(json.sha);
       await fetchServices();
     } finally {
       setSavingServices(false);
@@ -1053,7 +1054,7 @@ export default function AdminPage() {
             })}
 
             {services.length === 0 ? (
-              <div className="text-sm font-semibold text-slate-500">No services found in Supabase.</div>
+              <div className="text-sm font-semibold text-slate-500">No services found.</div>
             ) : null}
           </div>
         </div>
