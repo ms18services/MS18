@@ -1,19 +1,33 @@
 import NextAuth from 'next-auth';
+import type { Session, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import type { JWT } from 'next-auth/jwt';
 import { createClient } from '@supabase/supabase-js';
+import { getSupabaseConfig } from '@/lib/supabase';
 
-const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const { url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY } = getSupabaseConfig();
 
 const ADMIN_EMAIL_ALLOWLIST = new Set([
   'ms18@admin888.com',
 ]);
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY');
-}
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+type SupabaseUser = User & {
+  id: string;
+  email?: string | null;
+  supabaseAccessToken?: string;
+  supabaseRefreshToken?: string;
+};
+
+type SupabaseJwt = JWT & {
+  supabaseAccessToken?: string;
+  supabaseRefreshToken?: string;
+};
+
+type SupabaseSession = Session & {
+  supabaseAccessToken?: string;
+};
 
 function getJwtExpMs(jwt?: string) {
   if (!jwt) return null;
@@ -57,21 +71,24 @@ const handler = NextAuth({
           name: data.user.email,
           supabaseAccessToken: data.session.access_token,
           supabaseRefreshToken: data.session.refresh_token,
-        } as any;
+        } satisfies SupabaseUser;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
+      const nextToken = token as SupabaseJwt;
+      const nextUser = user as SupabaseUser | undefined;
+
       if (user) {
-        token.email = (user as any).email;
-        token.sub = (user as any).id;
-        token.supabaseAccessToken = (user as any).supabaseAccessToken;
-        token.supabaseRefreshToken = (user as any).supabaseRefreshToken;
+        nextToken.email = nextUser?.email ?? undefined;
+        nextToken.sub = nextUser?.id;
+        nextToken.supabaseAccessToken = nextUser?.supabaseAccessToken;
+        nextToken.supabaseRefreshToken = nextUser?.supabaseRefreshToken;
       }
 
-      const accessToken = (token as any).supabaseAccessToken as string | undefined;
-      const refreshToken = (token as any).supabaseRefreshToken as string | undefined;
+      const accessToken = nextToken.supabaseAccessToken;
+      const refreshToken = nextToken.supabaseRefreshToken;
       const expMs = getJwtExpMs(accessToken);
 
       if (accessToken && refreshToken && expMs) {
@@ -79,20 +96,23 @@ const handler = NextAuth({
         if (shouldRefresh) {
           const { data, error } = await supabase.auth.refreshSession({ refresh_token: refreshToken });
           if (!error && data?.session?.access_token) {
-            (token as any).supabaseAccessToken = data.session.access_token;
-            (token as any).supabaseRefreshToken = data.session.refresh_token;
+            nextToken.supabaseAccessToken = data.session.access_token;
+            nextToken.supabaseRefreshToken = data.session.refresh_token;
           }
         }
       }
 
-      return token;
+      return nextToken;
     },
     async session({ session, token }) {
+      const nextSession = session as SupabaseSession;
+      const nextToken = token as SupabaseJwt;
+
       if (session.user) {
         session.user.email = token.email as string;
       }
-      (session as any).supabaseAccessToken = (token as any).supabaseAccessToken;
-      return session;
+      nextSession.supabaseAccessToken = nextToken.supabaseAccessToken;
+      return nextSession;
     },
   },
   pages: {

@@ -135,7 +135,7 @@ export default function Home() {
 
           <div className="relative -mt-4  ">
 
-                <div className="absolute inset-0 flex items-center justify-center z-9 w-220 mt-17 -ml-30">
+                <div className="absolute inset-0 flex items-center pointer-events-none justify-center z-9 w-220 mt-17 -ml-30">
                   <div>
                   <Image
                     src="/homepagebackground.svg"
@@ -149,7 +149,7 @@ export default function Home() {
                 
               </div>
 
-              <div className="absolute inset-0 flex items-center justify-center z-9 w-50 -mt-90 ml-20">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-9 w-50 -mt-90 ml-20">
                   <div>
                   <img
                     src="/cd-windows.gif"
@@ -165,7 +165,7 @@ export default function Home() {
 
 
 
-              <div className="absolute inset-0 flex items-center justify-center z-20 w-35  -mb-65 ml-25">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 w-35  -mb-65 ml-25">
                   <div>
                   <img
                     src="/dino.gif"
@@ -180,7 +180,7 @@ export default function Home() {
               </div>
 
 
-              <div className="absolute inset-0 flex items-center justify-center z-20 w-30  -mb-50 ml-102">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 w-30  -mb-50 ml-102">
                   <div>
                   <img
                     src="/mouse_clicker.svg"
@@ -196,7 +196,7 @@ export default function Home() {
 
 
 
-              <div className="absolute inset-0 flex items-center justify-center z-20 w-23 -mt-100 ml-109">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 w-23 -mt-100 ml-109">
                   <div>
                   <img
                     src="/microsoft-computer.gif"

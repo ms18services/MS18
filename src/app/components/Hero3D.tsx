@@ -121,8 +121,8 @@ function ModelMotion({
     const floatY = Math.sin(t * 1.2) * 0.04;
 
     // Mouse tracking (subtle)
-    const targetRotX = baseRotX + my * 0.12;
-    const targetRotY = baseRotY + yawOffsetRef.current + mx * 0.18;
+    const targetRotX = baseRotX + my * 0.22;
+    const targetRotY = baseRotY + yawOffsetRef.current + mx * 0.28;
     const targetPosY = -0.1 + floatY;
 
     // Smooth damping

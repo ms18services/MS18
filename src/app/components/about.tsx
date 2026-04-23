@@ -1,211 +1,208 @@
 'use client';
-import License from './license';
+
+import BitsSplitText from './BitsSplitText';
+import GradualBlur from './GradualBlur';
+import LinkedTextType from './LinkedTextType';
 import MeetTheTeam from './meettheteam';
 import IPartners from './partners';
 import TheJournal from './thejournal';
-import gsap from 'gsap';
-import { useEffect, useRef } from 'react';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
-import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
-
-gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
-
+import WavesBackground from './WavesBackground';
 
 export default function About() {
-
-  const abouttext = useRef<HTMLDivElement | null>(null);
-  const head1 = useRef<HTMLSpanElement | null>(null);
-  const head2 = useRef<HTMLSpanElement | null>(null);
-  const head3 = useRef<HTMLSpanElement | null>(null);
-  const paragraph1 = useRef<HTMLParagraphElement | null>(null);
-
-  useEffect(() => {
-    if (abouttext.current) {
-
-
-
-      const split = new SplitText(abouttext.current, { type: 'words' });
-      
-      const animation = gsap.from(split.words, {
-        
-        y: -100,
-        opacity: 0,
-        rotation: "random(-80, 80)",
-        duration: 0.7,
-        ease: "back",
-        stagger: 0.15,
-        
-      });
-
-
-       return () => {
-      split.revert();
-      animation.revert();
-    };
-
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!head1.current || !head2.current || !head3.current || !paragraph1.current) return; 
-
-    const tl = gsap.timeline({defaults: {ease:"none"}});
-
-    tl.to(head1.current, {
-      scrambleText: {
-        
-      text: "MS18 COMPUTER SUPPLIES & SERVICES", 
-      chars: "upperCase", 
-      speed: 0.5, 
-      revealDelay: 0.5 
-      }
-    },0    
-    );  
-      
-      tl.to(head2.current, {
-        scrambleText: {
-          text: "M&S MINI COMPUTER SUPPLIES",
-          chars: "upperCase",
-          speed: 0.5,
-          revealDelay: 0.5,
-        },
-      },0);
-      
-      tl.to(head3.current, {
-        scrambleText: {
-          text: "OUR VISION",
-          chars: "upperCase",
-          speed: 0.5,
-          revealDelay: 0.5,
-        },
-      },0);
-      
-      tl.to(paragraph1.current, {
-        scrambleText: {
-          text: "OUR VALUES",
-          chars: "upperCase",
-          speed: 0.5,
-          revealDelay: 0.5,
-        },
-      });
-    
-
-
-
-      
-
-
-    
-    
-  }, []);
-  
-  
-
-
   return (
-
-    //about us
-    <section id="about" className=" border-t border-slate-100 bg-white scroll-mt-15">
-        
-        <div className="mx-auto max-w-6xl px-6 ">
-            {/* <div className="ml-235  mt-44 absolute z-25">
-              <img src="/cloud.svg" alt="" className="h-40 w-40 object-contain opacity-100" />
-            </div> */}
-
-          <div className="grid  grid-cols-[1fr_10fr] gap-1 rounded-3xl bg-white px-1 py-1">
-            <div className="font-bold translate-x-[-20px] h-[21em] w-full bg-gradient-to-r from-[#4873FF] via-[#1629A6] to-[#142699] via-30%  to-100% bg-clip-text text-transparent">
-              <h2 className="text-[10em]  -tracking-[10px] ">About</h2>            
-              <h2 className="text-[10em]  -tracking-[10px] leading-[0.2] ml-70">Us.</h2>
-                {/* Image left */}
-           <div className="relative w-full h-[500px] overflow-hidden  bottom-38 ">
-                 <img 
-                        src="/about-imageleft.png" 
-                        className="absolute left-0 bottom-0 h-full object-contain  [clip-path:inset(0_0_50px_0)]"
-                        />
-              </div>
-            </div>
-
-            <div>
-
-                
-           
-
+    <section id="about" className="border-t border-slate-100 bg-white scroll-mt-15 -mt-2">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="relative grid grid-cols-[1fr_10fr] gap-1 overflow-visible rounded-3xl bg-white px-1 py-1">
+          <WavesBackground fullBleedX bleedY={10} lineCount={15} showGlow={true} amplitude={15}
           
-                {/* text right */}
+          
+          className="z-0 opacity-90" />
 
-                <p className='bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text font-bold -mb-25   mt-12 -tracking-[0.08em] text-[4em] text-center'>
-                GET TO KNOW US.
-                </p>
-
-                <p className='bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text font-bold -mb-20   mt-22 -tracking-[0.01em] text-[1.2em] text-center'>
-                <span className="font-bold bg-gradient-to-b from-[#9A42E6]  to-[#562580] from-20% to-100% bg-clip-text text-transparent">" We Focus on your </span> <span className='font-bold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text'> Computers Needs </span> "  
-                </p>
-
-           <div className=" h-80 font-medium grid grid-cols-2 gap-5  max-w-2xl text-slate-600 mt-25 ">
-             <h1 className="text-justify text-[0.9em] indent-7 -tracking-[0.07 em] ">
-             <span className="">  <span className='font-bold bg-gradient-to-b from-[#9A42E6]  to-[#562580] from-20% to-100% bg-clip-text text-transparent'></span> (formerly known as <span ref={head2} className='font-bold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text'>M&S MINI COMPUTER SUPPLIES </span> )</span> was established in August 2003. The company was formed by siblings having vivid experience and wide exposure to Information Technology. Since then, the company has steadily grown by delivering reliable computer products.<br /> <br />  
-             </h1>
-
-              <p  className='text-justify text-[0.9em]'> The resource personnel working in the company have been consistently providing reliable support services. The bottom line of the company is building a  <span className="font-bold bg-gradient-to-b from-[#9A42E6]  to-[#562580] from-20% to-100% bg-clip-text text-transparent"> Long-term Business Partnership</span> with its clients where interpersonal relationships, reliability, assured quality and target oriented in <span className='font-bold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text'> Modern Technology.</span></p>
-
-             {/* <p className="text-justify text-[0.9em]">
-                We are genuinely client focused and continually seeking improvement in our products. We are determined to succed and draw inspiration from challenges. <br /> <br /> <span className="font-bold">MS18 COMPUTER SUPPLIES & SERVICES</span> provides professional service and orientation. All our staff is highly trained and has many years of experience, and they are always available for all your queries and service requests.
-             </p> */}
-
-             
-                  {/* Image right */}
-
-            </div> 
-            <div className="group relative rounded-[20px] bg-purple-500 h-40   max-w-2xl text-slate-600 -mt-23 mb-20 overflow-hidden">
-                    <div className="rounded-[20px] w-full h-40 bg-purple-500 overflow-hidden">
-                        <img 
-                        src="/about-image.jpg" 
-                        className="w-full h-full object-cover"
-                        />
-                    </div>
-
-                    <div className="pointer-events-none absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-                    <button
-                      type="button"
-                      className="absolute bottom-4 right-4 inline-flex items-center rounded-full px-5 py-2   text-sm font-semibold text-white shadow-sm ring-1 ring-white translate-y-6 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
-                    >
-                      Learn more
-                    </button>
-            </div>
-            
-
-             
-            
-
-</div>
-
+          <div className="relative z-10 h-[21em] w-full translate-x-[-20px] font-bold leading-[0.9] tracking-[-0.1em]">
+            <BitsSplitText
+              as="h2"
+              text="About"
+              className="text-[10em] bg-gradient-to-r from-[#4873FF] via-[#1629A6] to-[#142699] via-30% to-100% bg-clip-text text-transparent"
+            />
+            <BitsSplitText
+              as="h2"
+              text="Us."
+              wrapperClassName="ml-70"
+              className="text-[10em] bg-gradient-to-r from-[#9A42E6] to-[#562580] via-30% to-100% bg-clip-text text-transparent"
+            />
           </div>
+
+          <GradualBlur
+            blur={22}
+            y={72}
+            start="top 86%"
+            duration={0.85}
+            delay={0.55}
+            scrub={false}
+            className="pointer-events-none absolute left-0 top-1 mt-10 z-[100] h-[550px] w-fit overflow-hidden"
+          >
+            <img src="/about-imageleft.png" alt="" className="block h-full w-auto object-contain" />
+          </GradualBlur>
+
+          <div className="relative z-10">
+            <BitsSplitText
+              as="p"
+              text="GET TO KNOW US."
+              wrapperClassName="mx-auto mt-12 -mb-25 block"
+              className="bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% bg-clip-text text-[3.8em] font-bold text-transparent"
+            />
+
+            <div className="mt-3 -mb-20 flex flex-wrap items-center justify-center gap-x-2 text-[1.2em] font-bold -tracking-[0.01em]">
+              <BitsSplitText
+                as="span"
+                text={'" We Focus on your'}
+                className="bg-gradient-to-b from-[#9A42E6] to-[#562580] from-20% to-100% bg-clip-text text-transparent"
+              />
+              <BitsSplitText
+                as="span"
+                text="Computers Needs"
+                className="bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% bg-clip-text text-transparent"
+              />
+              <BitsSplitText
+                as="span"
+                text={'"'}
+                className="bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% bg-clip-text text-transparent"
+              />
+            </div>
+
+            <div className="mt-25 grid h-80 max-w-2xl grid-cols-2 gap-5 font-medium text-slate-600">
+              <LinkedTextType
+                typingSpeed={3}
+                startDelay={180}
+                cursorCharacter=""
+                resetOnExit
+                outroSpeed={8}
+                blocks={[
+                  {
+                    as: 'h1',
+                    className: 'text-justify text-[0.9em] indent-7',
+                    segments: [
+                      {
+                        text: 'MS18 Computer Supplies & Services',
+                        className:
+                          'bg-gradient-to-b from-[#9A42E6] to-[#562580] from-20% to-100% bg-clip-text font-bold text-transparent',
+                      },
+                      { text: ' (formerly known as ' },
+                      {
+                        text: 'M&S MINI COMPUTER SUPPLIES',
+                        className:
+                          'bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% bg-clip-text font-bold text-transparent',
+                      },
+                      {
+                        text:
+                          ') was established in August 2003. The company was formed by siblings having vivid experience and wide exposure to Information Technology. Since then, the company has steadily grown by delivering reliable products.',
+                      },
+                    ],
+                  },
+                  {
+                    as: 'p',
+                    className: 'text-justify text-[0.9em]',
+                    segments: [
+                      {
+                        text:
+                          'The resource personnel working in the company have been consistently providing reliable support services. The bottom line of the company is building a ',
+                      },
+                      {
+                        text: 'Long-term Business Partnership',
+                        className:
+                          'bg-gradient-to-b from-[#9A42E6] to-[#562580] from-20% to-100% bg-clip-text font-bold text-transparent',
+                      },
+                      {
+                        text:
+                          ' with its clients where interpersonal relationships, reliability, assured quality and target oriented in ',
+                      },
+                      {
+                        text: 'Modern Technology.',
+                        className:
+                          'bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-10% via-100% to-100% bg-clip-text font-bold text-transparent',
+                      },
+                    ],
+                  },
+                ]}
+              />
+            </div>  
+
+            <div className='mt-1'>
+
+            <GradualBlur
+              blur={18}
+              y={40}
+              start="top 92%"
+              duration={0.75}
+              delay={0.12}
+              scrub={false}
+              className="-mt-23 mb-20 max-w-2xl"
+            >
+              <div className="group relative h-40 overflow-hidden rounded-[20px] bg-purple-500 text-slate-600">
+                <div className="h-40 w-full overflow-hidden rounded-[20px] bg-purple-500">
+                  <img src="/1.jpg" alt="MS18 computer supplies and services" className="h-full w-full object-cover" />
+                </div>
+                  
+                <div className="pointer-events-none absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                <button
+                  type="button"
+                  className="absolute bottom-4 right-4 inline-flex translate-y-6 items-center rounded-full px-5 py-2 text-sm font-semibold text-white opacity-0 shadow-sm ring-1 ring-white transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+                >
+                  Learn more
+                </button>
+
+               
+              </div>
+            </GradualBlur>
+
+
+            <GradualBlur
+              blur={18}
+              y={40}
+              start="top 92%"
+              duration={0.75}
+              delay={0.12}
+              scrub={false}
+              className="-mt-73 pointer-events-none  mb-20 max-w-2xl"
+            >
+              <div className="group relative  rounded-[20px]  text-slate-600">
+                <div className=" h-full w-full rounded-[20px] opacity-100 ">
+                  <img src="/image.png" alt="MS18 computer supplies and services" className="h-full w-full  " />
+                </div>
+                  
+                <div className="pointer-events-none absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-300 " />
+
+                <button
+                  type="button"
+                  className="absolute bottom-4 right-4 inline-flex translate-y-6 items-center rounded-full px-5 py-2 text-sm font-semibold text-white opacity-0 shadow-sm ring-1 ring-white transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+                >
+                  Learn more
+                </button>
+
+               
+              </div>
+            </GradualBlur>
+
+            </div>
+
+            
+            
+          </div>
+        </div>
 
         <div>
           <MeetTheTeam />
         </div>
 
-         <div>
+        <div>
           <IPartners />
         </div>
 
         <div>
           <TheJournal />
         </div>
-        {/* <div>
-          <License />
-        </div> */}
-
-        
-        </div>
-      </section>
+      </div>
+    </section>
   );
 }
-
-
-
-
-
-

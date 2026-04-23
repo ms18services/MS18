@@ -17,6 +17,15 @@ export default function Navbar() {
   if (pathname !== '/') return;
   e.preventDefault();
 
+  if (section === 'home') {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+    return;
+  }
+
   const element = document.getElementById(section);
 
   if (element) {
@@ -68,7 +77,7 @@ export default function Navbar() {
 
   return (
     <header className="h-18 sticky top-0 z-50 bg-white/50 backdrop-blur border-slate-100">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Link href="/" className="flex group items-center gap-3 font-semibold tracking-tight text-slate-900">
           <div className=' opacity-100 cursor-default group-hover:hidden absolute z-19 translate-y-4 -translate-x-6.5 transition-opacity  duration-500'>
           <Image
@@ -92,7 +101,7 @@ export default function Navbar() {
 
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 mt-2 mr-10">
           <div className="hidden items-center gap-8 md:flex">
             <Link href="/#home" onClick={scrollToSection("home")} className={linkClasses("home")}>
               Home
@@ -117,7 +126,7 @@ export default function Navbar() {
             
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ">
             <button
               type="button"
               className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-50"
@@ -147,6 +156,7 @@ export default function Navbar() {
               </svg>
             </Link>
           </div>
+
         </div>
       </nav>
     </header>

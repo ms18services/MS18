@@ -41,6 +41,73 @@ function truncateWords(text: string, maxWords: number) {
   return `${parts.slice(0, maxWords).join(' ')}…`
 }
 
+function TiltedCard({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const frameRef = useRef<HTMLDivElement | null>(null)
+  const contentRef = useRef<HTMLDivElement | null>(null)
+  const glareRef = useRef<HTMLDivElement | null>(null)
+
+  const resetTilt = useCallback(() => {
+    if (frameRef.current) {
+      frameRef.current.style.transform = 'perspective(1600px) rotateX(0deg) rotateY(0deg) scale(1)'
+    }
+    if (contentRef.current) {
+      contentRef.current.style.transform = 'translateZ(0px)'
+    }
+    if (glareRef.current) {
+      glareRef.current.style.opacity = '0'
+    }
+  }, [])
+
+  const handlePointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch') return
+
+    const frame = frameRef.current
+    const content = contentRef.current
+    const glare = glareRef.current
+    if (!frame || !content || !glare) return
+
+    const rect = frame.getBoundingClientRect()
+    const x = (event.clientX - rect.left) / Math.max(rect.width, 1)
+    const y = (event.clientY - rect.top) / Math.max(rect.height, 1)
+    const rotateY = (x - 0.5) * 16
+    const rotateX = (0.5 - y) * 16
+
+    frame.style.transform =
+      `perspective(1600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.015)`
+    content.style.transform = 'translateZ(16px)'
+    glare.style.opacity = '1'
+    glare.style.background =
+      `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.28), transparent 58%)`
+  }, [])
+
+  return (
+    <div
+      ref={frameRef}
+      className="transform-gpu transition-transform duration-200 ease-out will-change-transform"
+      style={{ transformStyle: 'preserve-3d' }}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetTilt}
+      onPointerCancel={resetTilt}
+    >
+      <div
+        ref={contentRef}
+        className="relative transition-transform duration-200 ease-out"
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        {children}
+        <div
+          ref={glareRef}
+          className="pointer-events-none absolute inset-0 rounded-[28px] opacity-0 transition-opacity duration-200"
+        />
+      </div>
+    </div>
+  )
+}
+
 function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost; isExpanded: boolean; onToggleExpand: () => void }) {
   const theme = getTheme(post)
   const BODY_PREVIEW_CHARS = 150
@@ -62,7 +129,8 @@ function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost
 
   return (
     <div className="relative mt-5 mx-auto w-full max-w-4xl overflow-visible">
-      <div className="relative z-10 w-full min-h-[290px] overflow-hidden rounded-[28px] shadow-xl ring-1 ring-black/5">
+      <TiltedCard>
+      <div className="relative z-10 w-full min-h-[290px] overflow-hidden rounded-[28px] bg-white shadow-xl ring-1 ring-black/5">
         <Link
           href={`/journal?post=${encodeURIComponent(post.id)}`}
           className={
@@ -205,6 +273,7 @@ function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost
           </div>
         </div>
       </div>
+      </TiltedCard>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import SCarousel, { type ServiceCard } from "./ServicesCarousel"; // same folder
 import DirectionalMarquee from "./DirectionalMarquee";
+import GradualBlur from "./GradualBlur";
 import fallbackServices from "@/data/services.json";
 
 export default function Services() {
@@ -79,8 +80,6 @@ export default function Services() {
       className=" border-t border-slate-100 bg-slate-50/50 scroll-mt-24"
     >
       <div className="mx-auto max-w-6xl px-6 py-14">
-
-
         {/* marquee */}
         <div
           ref={marqueeWrapRef}
@@ -109,7 +108,9 @@ export default function Services() {
 
         <div className="-mt-8">
           <div className="mx-auto max-w-6xl px-6">
-            <SCarousel cards={serviceCards} twoRows />
+            <GradualBlur blur={18} y={56} start="top 92%" end="top 50%">
+              <SCarousel cards={serviceCards} twoRows />
+            </GradualBlur>
           </div>
         </div>
       </div>
