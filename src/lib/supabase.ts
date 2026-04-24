@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 function normalizeEnvValue(value: string | undefined) {
   const trimmed = value?.trim();
@@ -39,14 +39,36 @@ export function getSupabaseConfig(): { url: string; anonKey: string } {
 export const JOURNAL_IMAGES_BUCKET = 'journal-images';
 export const SERVICE_IMAGES_BUCKET = 'service-images';
 
+let browserAnonClient: SupabaseClient | null = null;
+
 export function createSupabaseAnonClient() {
   const { url, anonKey } = getSupabaseConfig();
-  return createClient(url, anonKey);
+
+  if (typeof window === 'undefined') {
+    return createClient(url, anonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    });
+  }
+
+  if (!browserAnonClient) {
+    browserAnonClient = createClient(url, anonKey);
+  }
+
+  return browserAnonClient;
 }
 
 export function createSupabaseUserClient(accessToken: string) {
   const { url, anonKey } = getSupabaseConfig();
   return createClient(url, anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
     global: {
       headers: {
         Authorization: `Bearer ${accessToken}`,

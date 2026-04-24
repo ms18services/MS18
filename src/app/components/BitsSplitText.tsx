@@ -119,21 +119,19 @@ export default function BitsSplitText({
           return false;
         };
 
-        if (playIfVisible()) {
-          return;
-        }
+        playIfVisible();
 
         observer = new IntersectionObserver(
           ([entry]) => {
             if (!entry || !tween) return;
 
             if (entry.isIntersecting) {
-              tween.play(0);
+              tween.play();
               return;
             }
 
             if (entry.boundingClientRect.top > 0) {
-              tween.pause(0);
+              tween.reverse();
             }
           },
           {

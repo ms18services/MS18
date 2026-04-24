@@ -79,7 +79,7 @@ export default function Navbar() {
     <header className="h-18 sticky top-0 z-50 bg-white/50 backdrop-blur border-slate-100">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Link href="/" className="flex group items-center gap-3 font-semibold tracking-tight text-slate-900">
-          <div className=' opacity-100 cursor-default group-hover:hidden absolute z-19 translate-y-4 -translate-x-6.5 transition-opacity  duration-500'>
+          <div className=' opacity-100 w-auto cursor-default group-hover:hidden absolute z-19 translate-y-4 -translate-x-6.5 transition-opacity  duration-500'>
           <Image
             src="/ms18logo.svg"
             alt="Computer Servicing"
@@ -89,7 +89,7 @@ export default function Navbar() {
           />
           </div>
 
-          <div className='opacity-0 cursor-default group-hover:opacity-100 absolute z-20 translate-y-4 -translate-x-6.5 transition-opacity duration-500'>
+          <div className='opacity-0 w-auto cursor-default group-hover:opacity-100 absolute z-20 translate-y-4 -translate-x-6.5 transition-opacity duration-500'>
             <Image
               src="/ms18logofull.svg"
               alt="Computer Servicing"

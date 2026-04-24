@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 
 type GradualBlurProps = {
@@ -32,7 +32,7 @@ export default function GradualBlur({
 }: GradualBlurProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = wrapperRef.current;
     if (!element) return;
 
@@ -58,6 +58,12 @@ export default function GradualBlur({
         },
       });
     } else {
+      gsap.set(element, {
+        filter: `blur(${blur}px)`,
+        opacity: 0.25,
+        y,
+      });
+
       tween = gsap.fromTo(element, {
         filter: `blur(${blur}px)`,
         opacity: 0.25,
@@ -82,28 +88,26 @@ export default function GradualBlur({
         return false;
       };
 
-      if (!playIfVisible()) {
-        observer = new IntersectionObserver(
-          ([entry]) => {
-            if (!entry || !tween) return;
+      playIfVisible();
 
-            if (entry.isIntersecting) {
-              tween.play(0);
-              return;
-            }
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry || !tween) return;
 
-            if (entry.boundingClientRect.top > 0) {
-              tween.pause(0);
-            }
-          },
-          {
-            threshold: 0.05,
-            rootMargin: '0px 0px -14% 0px',
+          if (entry.isIntersecting) {
+            tween.play();
+            return;
           }
-        );
 
-        observer.observe(element);
-      }
+          tween.reverse();
+        },
+        {
+          threshold: 0.05,
+          rootMargin: '0px 0px -14% 0px',
+        }
+      );
+
+      observer.observe(element);
     }
 
     return () => {

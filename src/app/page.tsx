@@ -1,52 +1,93 @@
 'use client'
 
-import Link from "next/link";
 import Services from "./components/services";
 import About from "./components/about";
 import Contact from "./components/contact";
 import Image from "next/image";
 import { TextAnimation } from "./components/TextAnimation";
 import Hero3D from "./components/Hero3D";
+import GradualBlur from "./components/GradualBlur";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
 
   const headRef = useRef<HTMLHeadingElement | null>(null);
   const [ctaVisible, setCtaVisible] = useState(false);
-  const [ctaInView, setCtaInView] = useState(true);
-  const ctaRef = useRef<HTMLAnchorElement | null>(null);
+  const autoScrollFrameRef = useRef<number | null>(null);
+
+  const cancelAutoScroll = useCallback(() => {
+    if (autoScrollFrameRef.current !== null) {
+      window.cancelAnimationFrame(autoScrollFrameRef.current);
+      autoScrollFrameRef.current = null;
+    }
+  }, []);
 
   const handleTextAnimationComplete = useCallback(() => {
     setCtaVisible(true);
   }, []);
 
-  useEffect(() => {
-    const el = ctaRef.current;
-    if (!el) return;
+  const handleFindOutMoreClick = useCallback(() => {
+    cancelAutoScroll();
 
-    const computeInView = () => {
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight || 1;
-      const visiblePx = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
-      return visiblePx / vh;
+    const pixelsPerSecond = 220;
+    let previousTime: number | null = null;
+
+    const step = (currentTime: number) => {
+      const root = document.documentElement;
+      const maxScroll = Math.max(0, root.scrollHeight - window.innerHeight);
+      const currentY = window.scrollY || window.pageYOffset || 0;
+
+      if (currentY >= maxScroll - 1) {
+        autoScrollFrameRef.current = null;
+        window.scrollTo({ top: maxScroll, behavior: "auto" });
+        return;
+      }
+
+      if (previousTime === null) {
+        previousTime = currentTime;
+      }
+
+      const deltaSeconds = Math.min((currentTime - previousTime) / 1000, 0.05);
+      previousTime = currentTime;
+      const nextY = Math.min(currentY + pixelsPerSecond * deltaSeconds, maxScroll);
+
+      window.scrollTo({ top: nextY, behavior: "auto" });
+      autoScrollFrameRef.current = window.requestAnimationFrame(step);
     };
 
-    const initialRatio = computeInView();
-    setCtaInView(initialRatio > 0);
+    autoScrollFrameRef.current = window.requestAnimationFrame(step);
+  }, [cancelAutoScroll]);
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry) return;
-        setCtaInView(entry.isIntersecting);
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -10% 0px" },
-    );
+  useEffect(() => {
+    const handleWheel = () => cancelAutoScroll();
+    const handleTouchStart = () => cancelAutoScroll();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const interruptKeys = [
+        "ArrowUp",
+        "ArrowDown",
+        "PageUp",
+        "PageDown",
+        "Home",
+        "End",
+        "Space",
+      ];
 
-    io.observe(el);
-    window.requestAnimationFrame(() => setCtaInView(computeInView() > 0));
-    return () => io.disconnect();
-  }, []);
+      if (interruptKeys.includes(event.code) || interruptKeys.includes(event.key)) {
+        cancelAutoScroll();
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("keydown", handleKeyDown);
+      cancelAutoScroll();
+    };
+  }, [cancelAutoScroll]);
   
 
 
@@ -101,29 +142,36 @@ export default function Home() {
               <p className="mt-9 font-semibold max-w-xl text-lg leading-8 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] inline-block text-transparent bg-clip-text">
             MS18 Computer Supplies & Services</p>
               
-              <Link
-                href="/contact"
-                ref={ctaRef}
-                className={`group inline-flex h-7 items-center justify-center gap-1 rounded-full border bg-white px-3 text-xs font-medium text-slate-900 shadow-sm transition-all duration-500 hover:bg-slate-50 ${
-                  ctaVisible && ctaInView
-                    ? "opacity-65 hover:opacity-100 border-black"
-                    : "opacity-0 border-transparent pointer-events-none"
-                }`}
-              >
-                <span>Find out more below.</span>
-                <svg
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className={`h-4 w-4 text-[#404040] transition-opacity duration-500 ${ctaVisible && ctaInView ? "opacity-100" : "opacity-0"}`}
-                  aria-hidden="true"
+              {ctaVisible ? (
+                <GradualBlur
+                  blur={18}
+                  y={18}
+                  duration={0.7}
+                  delay={0.05}
+                  scrub={false}
+                  className="inline-flex"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.7a.75.75 0 1 1 1.06 1.06l-4.24 4.25a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </Link>
+                  <button
+                    type="button"
+                    onClick={handleFindOutMoreClick}
+                    className="group inline-flex h-7 items-center justify-center gap-1 rounded-full border border-black bg-white px-3 text-xs font-medium text-slate-900 opacity-65 shadow-sm transition-all duration-300 hover:bg-slate-50 hover:opacity-100"
+                  >
+                    <span>Find out more below.</span>
+                    <svg
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="h-4 w-4 text-[#404040] transition-transform duration-300 group-hover:translate-y-0.5"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.7a.75.75 0 1 1 1.06 1.06l-4.24 4.25a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </GradualBlur>
+              ) : null}
 
               
            </div>

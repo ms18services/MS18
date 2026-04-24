@@ -1,14 +1,22 @@
 'use client';
 
+import { useRef } from 'react';
+
 import BitsSplitText from './BitsSplitText';
 import GradualBlur from './GradualBlur';
+import IntroFloatOnView from './IntroFloatOnView';
 import LinkedTextType from './LinkedTextType';
 import MeetTheTeam from './meettheteam';
 import IPartners from './partners';
+import PopInOnView from './PopInOnView';
+import Shine from './Shine';
+import SparklesGraphic from './SparklesGraphic';
 import TheJournal from './thejournal';
 import WavesBackground from './WavesBackground';
 
 export default function About() {
+  const decorTriggerRef = useRef<HTMLDivElement | null>(null);
+
   return (
     <section id="about" className="border-t border-slate-100 bg-white scroll-mt-15 -mt-2">
       <div className="mx-auto max-w-6xl px-6">
@@ -32,17 +40,34 @@ export default function About() {
             />
           </div>
 
-          <GradualBlur
-            blur={22}
-            y={72}
-            start="top 86%"
-            duration={0.85}
-            delay={0.55}
-            scrub={false}
-            className="pointer-events-none absolute left-0 top-1 mt-10 z-[100] h-[550px] w-fit overflow-hidden"
+          <div ref={decorTriggerRef} className="pointer-events-none absolute left-0 top-0 h-px w-px opacity-0" />
+
+          <IntroFloatOnView
+            delay={0.3}
+            triggerRef={decorTriggerRef}
+            className="pointer-events-none absolute -left-23 top-3 z-[90] h-[490px] w-[490px] opacity-100"
           >
-            <img src="/about-imageleft.png" alt="" className="block h-full w-auto object-contain" />
-          </GradualBlur>
+            <SparklesGraphic className="h-full w-full object-contain" />
+          </IntroFloatOnView>
+
+          <PopInOnView
+            duration={0.85}
+            delay={0.3}
+            y={42}
+            startScale={0.84}
+            triggerRef={decorTriggerRef}
+            className="float-slow pointer-events-none absolute -left-15 top-12 mt-10 z-[100] h-[480px] w-fit overflow-hidden"
+          >
+            <img src="/about-imageleft2.png" alt="" className="block h-full w-auto object-contain" />
+          </PopInOnView>
+
+          <IntroFloatOnView
+            delay={0.3}
+            triggerRef={decorTriggerRef}
+            className="pointer-events-none absolute left-98 top-59 z-[120] h-[120px] w-[180px] opacity-100"
+          >
+            <Shine className="h-full w-full object-contain" />
+          </IntroFloatOnView>
 
           <div className="relative z-10">
             <BitsSplitText
