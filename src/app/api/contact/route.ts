@@ -28,6 +28,30 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+async function sendEmail(payload: {
+  to: string[];
+  replyTo?: string;
+  subject: string;
+  text: string;
+  html: string;
+}) {
+  return fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: payload.to,
+      reply_to: payload.replyTo,
+      subject: payload.subject,
+      text: payload.text,
+      html: payload.html,
+    }),
+  });
+}
+
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as ContactPayload | null;
 
@@ -65,28 +89,21 @@ export async function POST(request: Request) {
   const safePhone = escapeHtml(phone);
   const safeMessage = escapeHtml(message).replaceAll('\n', '<br />');
 
-  const resendResponse = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [companyEmail],
-      reply_to: email,
-      subject: `New contact request from ${name}`,
-      text: [
-        'New contact request',
-        '',
-        `Name: ${name}`,
-        `Email: ${email}`,
-        `Contact Number: ${phone}`,
-        '',
-        'Message:',
-        message,
-      ].join('\n'),
-      html: `
+  const resendResponse = await sendEmail({
+    to: [companyEmail],
+    replyTo: email,
+    subject: `New contact request from ${name}`,
+    text: [
+      'New contact request',
+      '',
+      `Name: ${name}`,
+      `Email: ${email}`,
+      `Contact Number: ${phone}`,
+      '',
+      'Message:',
+      message,
+    ].join('\n'),
+    html: `
         <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.6;">
           <h2 style="margin-bottom: 16px;">New contact request</h2>
           <p><strong>Name:</strong> ${safeName}</p>
@@ -96,7 +113,6 @@ export async function POST(request: Request) {
           <p>${safeMessage}</p>
         </div>
       `,
-    }),
   });
 
   if (!resendResponse.ok) {

@@ -19,6 +19,7 @@ export type LogoItem =
       sizes?: string;
       width?: number;
       height?: number;
+      logoScale?: number;
     };
 
 export interface LogoLoopProps {
@@ -250,9 +251,9 @@ function LogoLoopComponent({
 
   const updateDimensions = useCallback(() => {
     const containerWidth = containerRef.current?.clientWidth ?? 0;
-    const sequenceRect = seqRef.current?.getBoundingClientRect();
-    const sequenceWidth = sequenceRect?.width ?? 0;
-    const sequenceHeight = sequenceRect?.height ?? 0;
+    const sequenceEl = seqRef.current;
+    const sequenceWidth = sequenceEl?.scrollWidth ?? 0;
+    const sequenceHeight = sequenceEl?.scrollHeight ?? 0;
 
     if (isVertical) {
       const parentHeight = containerRef.current?.parentElement?.clientHeight ?? 0;
@@ -265,9 +266,10 @@ function LogoLoopComponent({
       }
 
       if (sequenceHeight > 0) {
-        setSeqHeight(Math.ceil(sequenceHeight));
+        const sequenceStride = sequenceHeight + gap;
+        setSeqHeight(sequenceStride);
         const viewport = containerRef.current?.clientHeight ?? parentHeight ?? sequenceHeight;
-        const copiesNeeded = Math.ceil(viewport / sequenceHeight) + ANIMATION_CONFIG.COPY_HEADROOM;
+        const copiesNeeded = Math.ceil(viewport / sequenceStride) + ANIMATION_CONFIG.COPY_HEADROOM;
         setCopyCount(Math.max(ANIMATION_CONFIG.MIN_COPIES, copiesNeeded));
       }
 
@@ -275,11 +277,12 @@ function LogoLoopComponent({
     }
 
     if (sequenceWidth > 0) {
-      setSeqWidth(Math.ceil(sequenceWidth));
-      const copiesNeeded = Math.ceil(containerWidth / sequenceWidth) + ANIMATION_CONFIG.COPY_HEADROOM;
+      const sequenceStride = sequenceWidth + gap;
+      setSeqWidth(sequenceStride);
+      const copiesNeeded = Math.ceil(containerWidth / sequenceStride) + ANIMATION_CONFIG.COPY_HEADROOM;
       setCopyCount(Math.max(ANIMATION_CONFIG.MIN_COPIES, copiesNeeded));
     }
-  }, [isVertical]);
+  }, [gap, isVertical]);
 
   useResizeObserver(updateDimensions, [containerRef, seqRef], [logos, gap, logoHeight, isVertical]);
   useImageLoader(seqRef, updateDimensions, [logos, gap, logoHeight, isVertical]);
@@ -329,7 +332,6 @@ function LogoLoopComponent({
           <li
             className={cx(
               "flex-none leading-[1] text-[length:var(--logoloop-logoHeight)]",
-              isVertical ? "mb-[var(--logoloop-gap)]" : "mr-[var(--logoloop-gap)]",
               scaleOnHover && "group/item overflow-visible",
             )}
             key={key}
@@ -358,6 +360,10 @@ function LogoLoopComponent({
         const fallbackHeight = Math.max(item.height ?? logoHeight, 1);
         const fallbackWidth = Math.max(item.width ?? Math.round(fallbackHeight * 3), 1);
 
+        const scaledHeight = item.logoScale
+          ? ({ height: `calc(var(--logoloop-logoHeight) * ${item.logoScale})` } as React.CSSProperties)
+          : undefined;
+
         return (
           <Image
             className={cx(
@@ -376,6 +382,7 @@ function LogoLoopComponent({
             title={item.title}
             draggable={false}
             unoptimized
+            style={scaledHeight}
           />
         );
       })();
@@ -405,7 +412,6 @@ function LogoLoopComponent({
         <li
           className={cx(
             "flex-none leading-[1] text-[length:var(--logoloop-logoHeight)]",
-            isVertical ? "mb-[var(--logoloop-gap)]" : "mr-[var(--logoloop-gap)]",
             scaleOnHover && "group/item overflow-visible",
           )}
           key={key}
@@ -415,14 +421,17 @@ function LogoLoopComponent({
         </li>
       );
     },
-    [isVertical, logoHeight, renderItem, scaleOnHover],
+    [logoHeight, renderItem, scaleOnHover],
   );
 
   const logoLists = useMemo(
     () =>
       Array.from({ length: copyCount }, (_, copyIndex) => (
         <ul
-          className={cx("flex items-center", isVertical && "flex-col")}
+          className={cx(
+            "flex items-center",
+            isVertical ? "flex-col gap-[var(--logoloop-gap)]" : "gap-[var(--logoloop-gap)]",
+          )}
           key={`copy-${copyIndex}`}
           role="list"
           aria-hidden={copyIndex > 0}
@@ -499,7 +508,7 @@ function LogoLoopComponent({
         ref={trackRef}
         className={cx(
           "relative z-0 flex w-max select-none will-change-transform motion-reduce:transform-none",
-          isVertical ? "h-max w-full flex-col" : "flex-row",
+          isVertical ? "h-max w-full flex-col gap-[var(--logoloop-gap)]" : "flex-row gap-[var(--logoloop-gap)]",
         )}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}

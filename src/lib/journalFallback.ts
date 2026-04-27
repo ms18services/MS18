@@ -11,6 +11,7 @@ export type JournalFallbackPost = {
   body: string;
   gradient: JournalGradient;
   createdAt: Date;
+  carouselOrder: number | null;
   media: JournalMedia[];
 };
 
@@ -23,6 +24,8 @@ type JournalFallbackJsonPost = {
   gradient?: string;
   createdAt?: string;
   created_at?: string;
+  carouselOrder?: number | null;
+  carousel_order?: number | null;
   minutesAgo?: number;
   imageSrcs?: string[];
   media?: Array<{ type?: string; src?: string }>;
@@ -59,6 +62,12 @@ export function getJournalFallbackPosts(limit?: number): JournalFallbackPost[] {
     body: post.body || '',
     gradient: normalizeGradient(post.gradient),
     createdAt: getCreatedAt(post),
+    carouselOrder:
+      typeof post.carouselOrder === 'number'
+        ? post.carouselOrder
+        : typeof post.carousel_order === 'number'
+        ? post.carousel_order
+        : null,
     media: Array.isArray(post.media)
       ? post.media
           .filter((item) => !!item.src)
@@ -68,5 +77,12 @@ export function getJournalFallbackPosts(limit?: number): JournalFallbackPost[] {
       : [],
   }));
 
-  return typeof limit === 'number' ? posts.slice(0, limit) : posts;
+  const sortedPosts = posts.sort((a, b) => {
+    const aOrder = a.carouselOrder ?? Number.POSITIVE_INFINITY;
+    const bOrder = b.carouselOrder ?? Number.POSITIVE_INFINITY;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return b.createdAt.getTime() - a.createdAt.getTime();
+  });
+
+  return typeof limit === 'number' ? sortedPosts.slice(0, limit) : sortedPosts;
 }

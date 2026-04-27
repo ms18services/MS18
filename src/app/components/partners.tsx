@@ -4,12 +4,26 @@ import { useState } from "react";
 
 import LogoLoop, { type LogoItem } from "./LogoLoop";
 
-const partnerLogoSources = [
-  { src: "/computerhome.svg", title: "Computer Home" },
-  { src: "/ms18logofull.svg", title: "MS18 Computer Supplies & Services" },
-] as const;
+type PartnerLogoSource = {
+  src: string;
+  title: string;
+  width: number;
+  height: number;
+  logoScale?: number;
+};
 
-const createPartnerLogos = (size: number): LogoItem[] =>
+const partnerLogoSources: readonly PartnerLogoSource[] = [
+  { src: "/Partners/banbros.png", title: "Banbros", width: 891, height: 280 },
+  { src: "/Partners/cvs.png", title: "cvs", width: 506, height: 493 },
+  { src: "/Partners/gt logo-eng.png", title: "gt", width: 1342, height: 237 },
+  { src: "/Partners/joyo.png", title: "joyo", width: 871, height: 286 },
+  { src: "/Partners/logo.png", title: "Trinity", width: 170, height: 129 },
+  { src: "/Partners/metor.png", title: "metro", width: 551, height: 322 },
+  { src: "/Partners/synergy.png", title: "Synergy", width: 500, height: 500, logoScale: 1.25 },
+  { src: "/Partners/WS.svg", title: "WS", width: 127, height: 86 },
+];
+
+const createPartnerLogos = (): LogoItem[] =>
   Array.from({ length: 8 }, (_, i) => {
     const logo = partnerLogoSources[i % partnerLogoSources.length];
 
@@ -17,13 +31,14 @@ const createPartnerLogos = (size: number): LogoItem[] =>
       src: logo.src,
       alt: "",
       title: logo.title,
-      width: size,
-      height: size,
+      width: logo.width,
+      height: logo.height,
+      logoScale: logo.logoScale,
     };
   });
 
-const smallPartnerLogos = createPartnerLogos(80);
-const largePartnerLogos = createPartnerLogos(120);
+const smallPartnerLogos = createPartnerLogos();
+const largePartnerLogos = createPartnerLogos();
 
 export default function IPartners() {
   const [isLoopHovered, setIsLoopHovered] = useState(false);
@@ -41,7 +56,7 @@ export default function IPartners() {
         onMouseEnter={() => setIsLoopHovered(true)}
         onMouseLeave={() => setIsLoopHovered(false)}
       >
-        <div className="blur-[2px] [transform:scaleX(-1)] marquee-fade mt-15 relative left-1/2 w-[119vw] -translate-x-1/2 overflow-hidden opacity-70">
+        <div className="blur-[2px] [transform:scaleX(-1)] marquee-fade mt-15 relative left-1/2 w-[119vw] -translate-x-1/2 overflow-x-hidden overflow-y-visible py-4 opacity-70">
           <LogoLoop
             logos={smallPartnerLogos}
             direction="right"
@@ -56,7 +71,7 @@ export default function IPartners() {
           />
         </div>
 
-        <div className="marquee-fade -mt-10 relative left-1/2 w-[110vw] -translate-x-1/2 overflow-hidden">
+        <div className="marquee-fade -mt-10 relative left-1/2 w-[110vw] -translate-x-1/2 overflow-x-hidden overflow-y-visible py-5">
           <LogoLoop
             logos={largePartnerLogos}
             direction="right"

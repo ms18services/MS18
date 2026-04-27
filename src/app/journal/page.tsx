@@ -76,10 +76,14 @@ function MediaTile({
   media,
   className,
   play,
+  muted,
+  controls,
 }: {
   media: JournalMedia;
   className: string;
   play: boolean;
+  muted: boolean;
+  controls: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -97,15 +101,25 @@ function MediaTile({
     video.pause();
   }, [play, media.src]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = muted;
+  }, [muted, media.src]);
+
   return media.type === 'video' ? (
     <video
       ref={videoRef}
       src={media.src}
       className={className}
-      muted
+      muted={muted}
+      controls={controls}
       loop
       playsInline
       preload="metadata"
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
     />
   ) : (
     <img src={media.src} alt="" className={className} draggable={false} />
@@ -124,7 +138,6 @@ export default function JournalPage() {
   const [posts, setPosts] = useState<JournalPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [shareToast, setShareToast] = useState<string>('');
-  const [focusedPostId, setFocusedPostId] = useState<string | null>(null);
 
   const closingModalRef = useRef(false);
   const lastScrollYRef = useRef(0);
@@ -451,13 +464,6 @@ export default function JournalPage() {
                   setActiveMediaIndex(0);
                   router.replace(`/journal?post=${encodeURIComponent(post.id)}`, { scroll: false });
                 }}
-                onMouseEnter={() => setFocusedPostId(post.id)}
-                onMouseLeave={() => setFocusedPostId((current) => (current === post.id ? null : current))}
-                onFocus={() => setFocusedPostId(post.id)}
-                onBlur={(e) => {
-                  if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
-                  setFocusedPostId((current) => (current === post.id ? null : current));
-                }}
                 onKeyDown={(e) => {
                   if (e.key !== 'Enter' && e.key !== ' ') return;
                   e.preventDefault();
@@ -572,7 +578,9 @@ export default function JournalPage() {
                               <MediaTile
                                 media={m}
                                 className="h-full w-full object-cover"
-                                play={focusedPostId === post.id}
+                                play
+                                muted
+                                controls
                               />
                               {extra > 0 && idx === 3 ? (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/45">
@@ -703,7 +711,6 @@ export default function JournalPage() {
                               autoPlay
                               controls
                               loop
-                              muted
                               playsInline
                               preload="metadata"
                               onLoadedMetadata={(e) => {

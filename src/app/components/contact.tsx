@@ -358,13 +358,13 @@ export default function Contact() {
               </label>
 
               {submitError ? (
-                <div className="border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                <div className="rounded-full bg-red-500/10 px-4 py-3 text-sm text-red-200">
                   {submitError}
                 </div>
               ) : null}
 
               {submitSuccess ? (
-                <div className="border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+                <div className=" rounded-full bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
                   {submitSuccess}
                 </div>
               ) : null}

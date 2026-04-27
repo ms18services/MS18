@@ -20,6 +20,7 @@ type CarouselPostRow = {
   body: string
   gradient: 'purple' | 'blue' | 'green'
   created_at: string
+  carousel_order?: number | null
   journal_post_images?: Array<{ path: string; sort_order: number }>
 }
 
@@ -30,6 +31,7 @@ type CarouselPost = {
   subtitle: string
   body: string
   gradient: 'purple' | 'blue' | 'green'
+  carouselOrder: number | null
   media: JournalMedia[]
 }
 
@@ -41,6 +43,7 @@ function getFallbackCarouselPosts(): CarouselPost[] {
     subtitle: post.subtitle,
     body: post.body,
     gradient: post.gradient,
+    carouselOrder: post.carouselOrder,
     media: post.media,
   }))
 }
@@ -49,10 +52,14 @@ function MediaTile({
   media,
   className,
   play,
+  muted,
+  controls,
 }: {
   media: JournalMedia
   className: string
   play: boolean
+  muted: boolean
+  controls: boolean
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
@@ -70,12 +77,19 @@ function MediaTile({
     video.pause()
   }, [play, media.src])
 
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    video.muted = muted
+  }, [muted, media.src])
+
   return media.type === 'video' ? (
     <video
       ref={videoRef}
       src={media.src}
       className={className}
-      muted
+      muted={muted}
+      controls={controls}
       loop
       playsInline
       preload="metadata"
@@ -165,11 +179,13 @@ function TiltedCard({
 function CarouselCard({
   post,
   isActive,
+  soundEnabled,
   isExpanded,
   onToggleExpand,
 }: {
   post: CarouselPost
   isActive: boolean
+  soundEnabled: boolean
   isExpanded: boolean
   onToggleExpand: () => void
 }) {
@@ -237,6 +253,8 @@ function CarouselCard({
                         media={primary}
                         className="h-full w-full object-cover"
                         play={isActive}
+                        muted={!soundEnabled}
+                        controls={soundEnabled}
                       />
                     </div>
                   )
@@ -250,6 +268,8 @@ function CarouselCard({
                           media={primary}
                           className="h-full w-full object-cover"
                           play={isActive}
+                          muted={!soundEnabled}
+                          controls={soundEnabled}
                         />
                       </div>
                       <div className="relative h-full flex-[2] overflow-hidden rounded-[22px] bg-transparent">
@@ -258,6 +278,8 @@ function CarouselCard({
                             media={secondary}
                             className="h-full w-full object-cover"
                             play={isActive}
+                            muted={!soundEnabled}
+                            controls={soundEnabled}
                           />
                         ) : null}
                       </div>
@@ -272,6 +294,8 @@ function CarouselCard({
                         media={primary}
                         className="h-full w-full object-cover"
                         play={isActive}
+                        muted={!soundEnabled}
+                        controls={soundEnabled}
                       />
                     </div>
                     <div className="flex h-full w-[160px] flex-col gap-3">
@@ -281,6 +305,8 @@ function CarouselCard({
                             media={secondary}
                             className="h-full w-full object-cover"
                             play={isActive}
+                            muted={!soundEnabled}
+                            controls={soundEnabled}
                           />
                         ) : null}
                       </div>
@@ -290,6 +316,8 @@ function CarouselCard({
                             media={tertiary}
                             className="h-full w-full object-cover"
                             play={isActive}
+                            muted={!soundEnabled}
+                            controls={soundEnabled}
                           />
                         ) : null}
                         {extra > 0 ? (
@@ -417,11 +445,12 @@ export default function JournalCarousel({
         key={p.id}
         post={p}
         isActive={postIndex === index}
+        soundEnabled={postIndex === index && isHovered}
         isExpanded={!!expandedBodies[p.id]}
         onToggleExpand={() => toggleExpand(p.id)}
       />
     ))
-  }, [loading, posts, expandedBodies, toggleExpand, index])
+  }, [loading, posts, expandedBodies, toggleExpand, index, isHovered])
 
   useEffect(() => {
     let cancelled = false
@@ -429,11 +458,26 @@ export default function JournalCarousel({
       try {
         setLoading(true)
         const supabase = createSupabaseAnonClient()
-        const { data, error } = await supabase
+        const primaryResult = await supabase
           .from('journal_posts')
-          .select('id, category, title, subtitle, body, gradient, created_at, journal_post_images(path, sort_order)')
+          .select('id, category, title, subtitle, body, gradient, created_at, carousel_order, journal_post_images(path, sort_order)')
+          .order('carousel_order', { ascending: true, nullsFirst: false })
           .order('created_at', { ascending: false })
           .limit(3)
+
+        let data: unknown = primaryResult.data
+        let error = primaryResult.error
+
+        if (error) {
+          const fallback = await supabase
+            .from('journal_posts')
+            .select('id, category, title, subtitle, body, gradient, created_at, journal_post_images(path, sort_order)')
+            .order('created_at', { ascending: false })
+            .limit(3)
+
+          data = fallback.data
+          error = fallback.error
+        }
 
         if (cancelled) return
         if (error || !data) {
@@ -459,6 +503,7 @@ export default function JournalCarousel({
             subtitle: r.subtitle || '',
             body: r.body,
             gradient: r.gradient || 'purple',
+            carouselOrder: r.carousel_order ?? null,
             media,
           }
         })

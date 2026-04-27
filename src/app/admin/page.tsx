@@ -31,6 +31,7 @@ type JournalPost = {
   body: string;
   gradient: 'purple' | 'blue' | 'green';
   createdAt: Date;
+  carouselOrder: number | null;
   media: JournalMedia[];
 };
 
@@ -42,6 +43,7 @@ type JournalPostRow = {
   body: string;
   gradient: 'purple' | 'blue' | 'green';
   created_at: string;
+  carousel_order?: number | null;
   journal_post_images?: Array<{ path: string; sort_order: number }>;
 };
 
@@ -64,12 +66,13 @@ export default function AdminPage() {
 
   const [posts, setPosts] = useState<JournalPost[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<{ category: string; title: string; subtitle: string; body: string; gradient: 'purple' | 'blue' | 'green' }>({
+  const [form, setForm] = useState<{ category: string; title: string; subtitle: string; body: string; gradient: 'purple' | 'blue' | 'green'; carouselOrder: string }>({
     category: '',
     title: '',
     subtitle: '',
     body: '',
     gradient: 'purple',
+    carouselOrder: '',
   });
   const [existingImagePaths, setExistingImagePaths] = useState<string[]>([]);
   const [newImages, setNewImages] = useState<NewMedia[]>([]);
@@ -90,10 +93,24 @@ export default function AdminPage() {
 
   const fetchPosts = async () => {
     const supabase = createSupabaseAnonClient();
-    const { data, error: fetchError } = await supabase
+    const primaryResult = await supabase
       .from('journal_posts')
-      .select('id, category, title, subtitle, body, gradient, created_at, journal_post_images(path, sort_order)')
+      .select('id, category, title, subtitle, body, gradient, created_at, carousel_order, journal_post_images(path, sort_order)')
+      .order('carousel_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false });
+
+    let data: unknown = primaryResult.data;
+    let fetchError = primaryResult.error;
+
+    if (fetchError) {
+      const fallback = await supabase
+        .from('journal_posts')
+        .select('id, category, title, subtitle, body, gradient, created_at, journal_post_images(path, sort_order)')
+        .order('created_at', { ascending: false });
+
+      data = fallback.data;
+      fetchError = fallback.error;
+    }
 
     if (fetchError || !data) {
       setPosts([]);
@@ -120,6 +137,7 @@ export default function AdminPage() {
         body: r.body,
         gradient: r.gradient || 'purple',
         createdAt: new Date(r.created_at),
+        carouselOrder: r.carousel_order ?? null,
         media,
       };
     });
@@ -332,12 +350,17 @@ export default function AdminPage() {
   };
 
   const sortedPosts = useMemo(() => {
-    return [...posts].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return [...posts].sort((a, b) => {
+      const aOrder = a.carouselOrder ?? Number.POSITIVE_INFINITY;
+      const bOrder = b.carouselOrder ?? Number.POSITIVE_INFINITY;
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    });
   }, [posts]);
 
   const resetForm = () => {
     setEditingId(null);
-    setForm({ category: '', title: '', subtitle: '', body: '', gradient: 'purple' });
+    setForm({ category: '', title: '', subtitle: '', body: '', gradient: 'purple', carouselOrder: '' });
     setExistingImagePaths([]);
     setNewImages([]);
     setError('');
@@ -345,7 +368,14 @@ export default function AdminPage() {
 
   const startEdit = async (post: JournalPost) => {
     setEditingId(post.id);
-    setForm({ category: post.category, title: post.title, subtitle: post.subtitle, body: post.body, gradient: post.gradient });
+    setForm({
+      category: post.category,
+      title: post.title,
+      subtitle: post.subtitle,
+      body: post.body,
+      gradient: post.gradient,
+      carouselOrder: post.carouselOrder == null ? '' : String(post.carouselOrder),
+    });
 
     try {
       const supabase = createSupabaseAnonClient();
@@ -385,9 +415,16 @@ export default function AdminPage() {
     const subtitle = form.subtitle.trim();
     const body = form.body.trim();
     const gradient = form.gradient;
+    const carouselOrderInput = form.carouselOrder.trim();
+    const carouselOrder = carouselOrderInput === '' ? null : Number(carouselOrderInput);
 
     if (!category || !title || !body) {
       setError('Please fill in category, title, and body.');
+      return;
+    }
+
+    if (carouselOrder !== null && (!Number.isInteger(carouselOrder) || carouselOrder < 1)) {
+      setError('Carousel order must be a whole number starting at 1, or blank.');
       return;
     }
 
@@ -408,6 +445,7 @@ export default function AdminPage() {
           subtitle,
           body,
           gradient,
+          carousel_order: carouselOrder,
           ...(createdAt ? { created_at: createdAt } : {}),
           updated_at: new Date().toISOString(),
         } as any,
@@ -662,6 +700,19 @@ export default function AdminPage() {
               </label>
 
               <label className="grid gap-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Carousel order</span>
+                <input
+                  className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-900 outline-none focus:border-slate-400"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={form.carouselOrder}
+                  onChange={(e) => setForm((p) => ({ ...p, carouselOrder: e.target.value }))}
+                  placeholder="1 shows first, blank follows date"
+                />
+              </label>
+
+              <label className="grid gap-2">
                 <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Title</span>
                 <input
                   className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-900 outline-none focus:border-slate-400"
@@ -776,6 +827,9 @@ export default function AdminPage() {
                         {p.gradient}
                       </div>
                       <div className="mt-1 text-sm font-semibold text-slate-700">{p.category}</div>
+                      <div className="mt-1 text-xs font-semibold text-slate-400">
+                        Carousel order: {p.carouselOrder ?? 'not set'}
+                      </div>
                       <div className="mt-1 text-base font-bold text-slate-900" style={{ wordBreak: 'break-all' }}>
                         {p.title}
                       </div>
