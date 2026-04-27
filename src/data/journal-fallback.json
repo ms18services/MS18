@@ -1,0 +1,62 @@
+[
+
+  {
+    "id": "fallback-digital-space",
+    "category": "For Companies",
+    "title": "Willing to prepare you for the Digital Space",
+    "subtitle": "The perseverance of Technician",
+    "body": "The future is in your hands. We can help you set up your devices, network, and cloud services so your team can work reliably and securely.",
+    "gradient": "blue",
+    "minutesAgo": 150,
+    "media": [
+      {
+        "type": "image",
+        "src": "/image post/3.jpg"
+      }
+    ]
+  },
+
+  
+  {
+    "idx": 0,
+    "id": "p5",
+    "category": "For the People",
+    "title": "Since 2003",
+    "body": "For more than two decades, we have helped individuals and businesses keep their systems running smoothly through quality computer repair, parts replacement, and technical support. Our team focuses on delivering honest service, efficient solutions, and reliable workmanship to meet the needs of every client. From troubleshooting everyday issues to restoring device performance, we continue to stand by our mission of providing service you can count on.",
+    "created_at": "2026-03-23 05:44:24.301+00",
+    "updated_at": "2026-04-24 07:39:58.083+00",
+    "author_id": null,
+    "gradient": "purple",
+    "subtitle": "The Perseverance of Technology",
+    "media": [
+      {
+        "type": "image",
+        "src": "/image post/4.jpg"
+      },
+      {
+        "type": "image",
+        "src": "/image post/1.jpg"
+      },
+      {
+        "type": "image",
+        "src": "/image post/2.jpg"
+      }
+    ]
+  },
+  
+  {
+    "id": "fallback-reliable-support",
+    "category": "For Good Vibes",
+    "title": "Positive Energy All Over",
+    "subtitle": "Wholesome people, connected workforce",
+    "body": "A strong workplace is built by people who support each other, stay connected, and enjoy the work they do. Our team brings that energy into every day by helping clients, sharing knowledge, solving problems together, and keeping the office atmosphere light, focused, and fun.",
+    "gradient": "green",
+    "minutesAgo": 210,
+    "media": [
+      {
+        "type": "video",
+        "src": "/image post/vid1.mp4"
+      }
+    ]
+  }
+]

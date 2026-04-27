@@ -8,6 +8,7 @@ import {
   JOURNAL_IMAGES_BUCKET,
   SERVICE_IMAGES_BUCKET,
 } from '@/lib/supabase';
+import { toJournalMedia, type JournalMedia } from '@/lib/journalMedia';
 
 type ServicePillStatus = 'available' | 'unavailable' | 'remote' | 'on_site';
 
@@ -30,7 +31,7 @@ type JournalPost = {
   body: string;
   gradient: 'purple' | 'blue' | 'green';
   createdAt: Date;
-  media: Array<{ type: 'image'; src?: string }>;
+  media: JournalMedia[];
 };
 
 type JournalPostRow = {
@@ -44,10 +45,18 @@ type JournalPostRow = {
   journal_post_images?: Array<{ path: string; sort_order: number }>;
 };
 
-type NewImage = { file: File; previewUrl: string };
+type NewMedia = { file: File; previewUrl: string };
 
 function safeFileName(name: string) {
   return name.replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
+function MediaPreview({ media, className }: { media: JournalMedia; className: string }) {
+  return media.type === 'video' ? (
+    <video src={media.src} className={className} muted playsInline preload="metadata" />
+  ) : (
+    <img src={media.src} alt="" className={className} draggable={false} />
+  );
 }
 
 export default function AdminPage() {
@@ -63,7 +72,7 @@ export default function AdminPage() {
     gradient: 'purple',
   });
   const [existingImagePaths, setExistingImagePaths] = useState<string[]>([]);
-  const [newImages, setNewImages] = useState<NewImage[]>([]);
+  const [newImages, setNewImages] = useState<NewMedia[]>([]);
   const [error, setError] = useState<string>('');
 
   const [services, setServices] = useState<ServiceRow[]>([]);
@@ -100,7 +109,7 @@ export default function AdminPage() {
       const media = images.map((img) => {
         const url = supabase.storage.from(JOURNAL_IMAGES_BUCKET).getPublicUrl(img.path).data
           .publicUrl;
-        return { type: 'image' as const, src: url };
+        return toJournalMedia(url);
       });
 
       return {
@@ -412,7 +421,7 @@ export default function AdminPage() {
 
     const postIdToUse = id;
 
-    // Delete removed images from storage (editing flow can orphan files otherwise)
+    // Delete removed media from storage (editing flow can orphan files otherwise)
     const { data: currentImageRows, error: currentImagesError } = await supabaseUser
       .from('journal_post_images')
       .select('path')
@@ -429,7 +438,7 @@ export default function AdminPage() {
           .remove(removedPaths);
 
         if (removeError) {
-          console.error('Failed to delete removed images from storage:', removeError.message);
+          console.error('Failed to delete removed media from storage:', removeError.message);
           // Continue anyway so post edits are not blocked
         }
       }
@@ -441,7 +450,7 @@ export default function AdminPage() {
       .eq('post_id', postIdToUse);
 
     if (deleteImagesError) {
-      setError(`Failed to update post images: ${deleteImagesError.message}`);
+      setError(`Failed to update post media: ${deleteImagesError.message}`);
       return;
     }
 
@@ -454,7 +463,7 @@ export default function AdminPage() {
         .upload(path, img.file, { upsert: true });
 
       if (uploadError) {
-        setError(`Failed to upload image: ${uploadError.message}`);
+        setError(`Failed to upload media: ${uploadError.message}`);
         return;
       }
 
@@ -472,7 +481,7 @@ export default function AdminPage() {
       );
 
       if (insertError) {
-        setError(`Failed to save image references: ${insertError.message}`);
+        setError(`Failed to save media references: ${insertError.message}`);
         return;
       }
     }
@@ -528,7 +537,7 @@ export default function AdminPage() {
     if (!files || files.length === 0) return;
     setError('');
 
-    const next: NewImage[] = Array.from(files).map((f) => ({
+    const next: NewMedia[] = Array.from(files).map((f) => ({
       file: f,
       previewUrl: URL.createObjectURL(f),
     }));
@@ -683,11 +692,11 @@ export default function AdminPage() {
               </label>
 
               <label className="grid gap-2">
-                <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Attach images</span>
+                <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Attach media</span>
                 <input
                   className="block w-full text-sm font-semibold text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-800"
                   type="file"
-                  accept="image/*"
+                  accept="image/*,video/*"
                   multiple
                   onChange={(e) => onAttachImages(e.target.files)}
                 />
@@ -703,14 +712,15 @@ export default function AdminPage() {
                       const supabase = createSupabaseAnonClient();
                       const src = supabase.storage.from(JOURNAL_IMAGES_BUCKET).getPublicUrl(path).data
                         .publicUrl;
+                      const media = toJournalMedia(src);
                       return (
                         <div key={`existing-${idx}-${path}`} className="relative overflow-hidden rounded-xl ring-1 ring-slate-200">
-                          <img src={src} alt="" className="h-24 w-full object-cover" draggable={false} />
+                          <MediaPreview media={media} className="h-24 w-full object-cover" />
                           <button
                             type="button"
                             className="absolute right-2 top-2 rounded-full bg-black/55 px-2 py-1 text-xs font-bold text-white"
                             onClick={() => setExistingImagePaths((prev) => prev.filter((_, i) => i !== idx))}
-                            aria-label="Remove image"
+                            aria-label="Remove media"
                           >
                             ×
                           </button>
@@ -720,12 +730,12 @@ export default function AdminPage() {
 
                     {newImages.map((img, idx) => (
                       <div key={`new-${idx}-${img.previewUrl}`} className="relative overflow-hidden rounded-xl ring-1 ring-slate-200">
-                        <img src={img.previewUrl} alt="" className="h-24 w-full object-cover" draggable={false} />
+                        <MediaPreview media={toJournalMedia(img.previewUrl, img.file.type.startsWith('video/') ? 'video' : 'image')} className="h-24 w-full object-cover" />
                         <button
                           type="button"
                           className="absolute right-2 top-2 rounded-full bg-black/55 px-2 py-1 text-xs font-bold text-white"
                           onClick={() => setNewImages((prev) => prev.filter((_, i) => i !== idx))}
-                          aria-label="Remove image"
+                          aria-label="Remove media"
                         >
                           ×
                         </button>
@@ -772,7 +782,7 @@ export default function AdminPage() {
                       <p className="mt-2 text-sm text-slate-600 line-clamp-3" style={{ wordBreak: 'break-all' }}>
                         {p.body}
                       </p>
-                      <div className="mt-2 text-xs font-semibold text-slate-400">{p.media.length} images</div>
+                      <div className="mt-2 text-xs font-semibold text-slate-400">{p.media.length} media files</div>
                     </div>
 
                     <div className="flex flex-col gap-2">

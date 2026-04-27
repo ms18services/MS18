@@ -4,6 +4,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { createSupabaseAnonClient, JOURNAL_IMAGES_BUCKET } from '@/lib/supabase'
+import { getJournalFallbackPosts } from '@/lib/journalFallback'
+import { toJournalMedia, type JournalMedia } from '@/lib/journalMedia'
 
 type JournalCarouselProps = {
   className?: string
@@ -28,7 +30,59 @@ type CarouselPost = {
   subtitle: string
   body: string
   gradient: 'purple' | 'blue' | 'green'
-  imageSrcs: string[]
+  media: JournalMedia[]
+}
+
+function getFallbackCarouselPosts(): CarouselPost[] {
+  return getJournalFallbackPosts(3).map((post) => ({
+    id: post.id,
+    category: post.category,
+    title: post.title,
+    subtitle: post.subtitle,
+    body: post.body,
+    gradient: post.gradient,
+    media: post.media,
+  }))
+}
+
+function MediaTile({
+  media,
+  className,
+  play,
+}: {
+  media: JournalMedia
+  className: string
+  play: boolean
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    if (play) {
+      void video.play().catch(() => {
+        // Browser autoplay policies can still block playback in some contexts.
+      })
+      return
+    }
+
+    video.pause()
+  }, [play, media.src])
+
+  return media.type === 'video' ? (
+    <video
+      ref={videoRef}
+      src={media.src}
+      className={className}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+    />
+  ) : (
+    <img src={media.src} alt="" className={className} draggable={false} />
+  )
 }
 
 function getTheme(post: CarouselPost) {
@@ -108,7 +162,17 @@ function TiltedCard({
   )
 }
 
-function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost; isExpanded: boolean; onToggleExpand: () => void }) {
+function CarouselCard({
+  post,
+  isActive,
+  isExpanded,
+  onToggleExpand,
+}: {
+  post: CarouselPost
+  isActive: boolean
+  isExpanded: boolean
+  onToggleExpand: () => void
+}) {
   const theme = getTheme(post)
   const BODY_PREVIEW_CHARS = 150
   const shouldShowSeeMore = post.body.trim().length > BODY_PREVIEW_CHARS
@@ -155,13 +219,13 @@ function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost
         </Link>
 
         <div className="flex flex-col gap-6 p-5 pl-3 pb-16 md:flex-row md:items-start md:gap-10 md:p-7 md:pl-6 md:pb-16">
-          {post.imageSrcs.length > 0 ? (
+          {post.media.length > 0 ? (
             <div className="flex shrink-0 justify-center md:items-center md:justify-start">
               {(() => {
-                const count = post.imageSrcs.length
-                const primary = post.imageSrcs[0]
-                const secondary = post.imageSrcs[1]
-                const tertiary = post.imageSrcs[2]
+                const count = post.media.length
+                const primary = post.media[0]
+                const secondary = post.media[1]
+                const tertiary = post.media[2]
                 const extra = Math.max(0, count - 3)
 
                 if (!primary) return null
@@ -169,7 +233,11 @@ function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost
                 if (count <= 1) {
                   return (
                     <div className="h-[280px] w-full max-w-[460px] overflow-hidden rounded-[22px] bg-transparent md:translate-y-5 md:h-[280px] md:w-[460px]">
-                      <img src={primary} alt="" className="h-full w-full object-cover" draggable={false} />
+                      <MediaTile
+                        media={primary}
+                        className="h-full w-full object-cover"
+                        play={isActive}
+                      />
                     </div>
                   )
                 }
@@ -178,11 +246,19 @@ function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost
                   return (
                     <div className="flex h-[260px] w-full max-w-[560px] gap-3 md:translate-y-5 md:h-[260px] md:w-[520px]">
                       <div className="relative h-full flex-[3] overflow-hidden rounded-[22px] bg-transparent">
-                        <img src={primary} alt="" className="h-full w-full object-cover" draggable={false} />
+                        <MediaTile
+                          media={primary}
+                          className="h-full w-full object-cover"
+                          play={isActive}
+                        />
                       </div>
                       <div className="relative h-full flex-[2] overflow-hidden rounded-[22px] bg-transparent">
                         {secondary ? (
-                          <img src={secondary} alt="" className="h-full w-full object-cover" draggable={false} />
+                          <MediaTile
+                            media={secondary}
+                            className="h-full w-full object-cover"
+                            play={isActive}
+                          />
                         ) : null}
                       </div>
                     </div>
@@ -192,17 +268,29 @@ function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost
                 return (
                   <div className="flex h-[250px] w-full max-w-[520px] gap-3 md:translate-y-5 md:h-[250px] md:w-[520px]">
                     <div className="relative h-full flex-1 overflow-hidden rounded-[22px] bg-transparent">
-                      <img src={primary} alt="" className="h-full w-full object-cover" draggable={false} />
+                      <MediaTile
+                        media={primary}
+                        className="h-full w-full object-cover"
+                        play={isActive}
+                      />
                     </div>
                     <div className="flex h-full w-[160px] flex-col gap-3">
                       <div className="relative flex-1 overflow-hidden rounded-[18px] bg-transparent">
                         {secondary ? (
-                          <img src={secondary} alt="" className="h-full w-full object-cover" draggable={false} />
+                          <MediaTile
+                            media={secondary}
+                            className="h-full w-full object-cover"
+                            play={isActive}
+                          />
                         ) : null}
                       </div>
                       <div className="relative flex-1 overflow-hidden rounded-[18px] bg-transparent">
                         {tertiary ? (
-                          <img src={tertiary} alt="" className="h-full w-full object-cover" draggable={false} />
+                          <MediaTile
+                            media={tertiary}
+                            className="h-full w-full object-cover"
+                            play={isActive}
+                          />
                         ) : null}
                         {extra > 0 ? (
                           <div className="absolute inset-0 flex items-center justify-center bg-black/45">
@@ -223,9 +311,9 @@ function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost
             >
               {post.category}
             </div>
-            <div className="mt-1 text-[20px] font-bold leading-[1] -tracking-[1px]">
+            <div className="mt-1 text-[20px] font-bold leading-[1.12] -tracking-[1px]">
               <span
-                className={`block bg-clip-text text-transparent w-full text-[2.1em] -tracking-[2px] ${titleClass} [overflow-wrap:anywhere] break-words`}
+                className={`block bg-clip-text text-transparent w-full pb-[0.08em] text-[2.1em] leading-[1.12] -tracking-[2px] ${titleClass} [overflow-wrap:anywhere] break-words`}
               >
                 {post.title}
               </span>
@@ -234,7 +322,7 @@ function CarouselCard({ post, isExpanded, onToggleExpand }: { post: CarouselPost
               <div className="mt-1 text-[1.2em] font-bold text-[#616161] -tracking-[1px]">{post.subtitle}</div>
             )}
 
-            <div className="mt-4 font-semibold text-[11px] leading-[1.2] text-slate-500 [overflow-wrap:anywhere] break-words">
+            <div className="mt-2 font-semibold text-[11px] leading-[1.2] text-slate-500 [overflow-wrap:anywhere] break-words">
               {isExpanded ? (
                 <p>
                   {post.body}{' '}
@@ -285,6 +373,11 @@ export default function JournalCarousel({
   const [posts, setPosts] = useState<CarouselPost[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedBodies, setExpandedBodies] = useState<Record<string, boolean>>({})
+  const [index, setIndex] = useState(0)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragOffsetPx, setDragOffsetPx] = useState(0)
 
   const toggleExpand = useCallback((postId: string) => {
     setExpandedBodies((prev) => ({
@@ -319,20 +412,16 @@ export default function JournalCarousel({
     }
 
     if (posts.length === 0) return []
-    return posts.map((p) => (
+    return posts.map((p, postIndex) => (
       <CarouselCard
         key={p.id}
         post={p}
+        isActive={postIndex === index}
         isExpanded={!!expandedBodies[p.id]}
         onToggleExpand={() => toggleExpand(p.id)}
       />
     ))
-  }, [loading, posts, expandedBodies, toggleExpand])
-  const [index, setIndex] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragOffsetPx, setDragOffsetPx] = useState(0)
+  }, [loading, posts, expandedBodies, toggleExpand, index])
 
   useEffect(() => {
     let cancelled = false
@@ -348,7 +437,7 @@ export default function JournalCarousel({
 
         if (cancelled) return
         if (error || !data) {
-          setPosts([])
+          setPosts(getFallbackCarouselPosts())
           return
         }
 
@@ -358,9 +447,10 @@ export default function JournalCarousel({
             .slice()
             .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
 
-          const imageSrcs = imgs
+          const media = imgs
             .map((img) => supabase.storage.from(JOURNAL_IMAGES_BUCKET).getPublicUrl(img.path).data.publicUrl)
             .filter((src) => !!src)
+            .map((src) => toJournalMedia(src))
 
           return {
             id: r.id,
@@ -369,14 +459,14 @@ export default function JournalCarousel({
             subtitle: r.subtitle || '',
             body: r.body,
             gradient: r.gradient || 'purple',
-            imageSrcs,
+            media,
           }
         })
 
         setPosts(mapped)
       } catch {
         if (cancelled) return
-        setPosts([])
+        setPosts(getFallbackCarouselPosts())
       } finally {
         if (cancelled) return
         setLoading(false)

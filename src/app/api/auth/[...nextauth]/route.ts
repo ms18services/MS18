@@ -18,15 +18,19 @@ type SupabaseUser = User & {
   email?: string | null;
   supabaseAccessToken?: string;
   supabaseRefreshToken?: string;
+  supabaseExpiresAt?: number;
 };
 
 type SupabaseJwt = JWT & {
   supabaseAccessToken?: string;
   supabaseRefreshToken?: string;
+  supabaseExpiresAt?: number;
+  supabaseRefreshError?: string;
 };
 
 type SupabaseSession = Session & {
   supabaseAccessToken?: string;
+  supabaseRefreshError?: string;
 };
 
 function getJwtExpMs(jwt?: string) {
@@ -34,7 +38,9 @@ function getJwtExpMs(jwt?: string) {
   const parts = jwt.split('.');
   if (parts.length < 2) return null;
   try {
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8')) as { exp?: number };
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+    const payload = JSON.parse(Buffer.from(padded, 'base64').toString('utf8')) as { exp?: number };
     if (!payload?.exp) return null;
     return payload.exp * 1000;
   } catch {
@@ -71,6 +77,7 @@ const handler = NextAuth({
           name: data.user.email,
           supabaseAccessToken: data.session.access_token,
           supabaseRefreshToken: data.session.refresh_token,
+          supabaseExpiresAt: data.session.expires_at,
         } satisfies SupabaseUser;
       },
     }),
@@ -85,11 +92,15 @@ const handler = NextAuth({
         nextToken.sub = nextUser?.id;
         nextToken.supabaseAccessToken = nextUser?.supabaseAccessToken;
         nextToken.supabaseRefreshToken = nextUser?.supabaseRefreshToken;
+        nextToken.supabaseExpiresAt = nextUser?.supabaseExpiresAt;
+        nextToken.supabaseRefreshError = undefined;
       }
 
       const accessToken = nextToken.supabaseAccessToken;
       const refreshToken = nextToken.supabaseRefreshToken;
-      const expMs = getJwtExpMs(accessToken);
+      const expMs = nextToken.supabaseExpiresAt
+        ? nextToken.supabaseExpiresAt * 1000
+        : getJwtExpMs(accessToken);
 
       if (accessToken && refreshToken && expMs) {
         const shouldRefresh = Date.now() > expMs - 60_000;
@@ -98,6 +109,10 @@ const handler = NextAuth({
           if (!error && data?.session?.access_token) {
             nextToken.supabaseAccessToken = data.session.access_token;
             nextToken.supabaseRefreshToken = data.session.refresh_token;
+            nextToken.supabaseExpiresAt = data.session.expires_at;
+            nextToken.supabaseRefreshError = undefined;
+          } else {
+            nextToken.supabaseRefreshError = error?.message || 'Unable to refresh Supabase session';
           }
         }
       }
@@ -112,6 +127,7 @@ const handler = NextAuth({
         session.user.email = token.email as string;
       }
       nextSession.supabaseAccessToken = nextToken.supabaseAccessToken;
+      nextSession.supabaseRefreshError = nextToken.supabaseRefreshError;
       return nextSession;
     },
   },

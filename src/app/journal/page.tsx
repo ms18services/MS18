@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createSupabaseAnonClient, JOURNAL_IMAGES_BUCKET } from '@/lib/supabase';
+import { getJournalFallbackPosts } from '@/lib/journalFallback';
+import { toJournalMedia, type JournalMedia } from '@/lib/journalMedia';
 
 type JournalPost = {
   id: string;
@@ -12,7 +14,7 @@ type JournalPost = {
   body: string;
   gradient: 'purple' | 'blue' | 'green';
   createdAt: Date;
-  media: Array<{ type: 'image'; src?: string }>;
+  media: JournalMedia[];
 };
 
 type JournalPostRow = {
@@ -57,50 +59,58 @@ function formatTimeAgo(now: Date, createdAt: Date) {
   return `${diffDays}d ${remHrs}hr ${remMin}mins ago`;
 }
 
-const SEEDED_POSTS: JournalPost[] = [
-  {
-    id: 'p1',
-    category: 'For the People',
-    title: 'Since 2003',
-    subtitle: 'The perseverance of Technician',
-    body:
-      "We provide reliable computer repair services focused on fixing broken components, replacing faulty parts, and restoring your device's performance. Our goal is to deliver honest, efficient solutions that keep your technology running smoothly, whether for work, study, or everyday use.",
-    gradient: 'purple',
-    createdAt: new Date(Date.now() - 8 * 60 * 1000),
-    media: [
-      { type: 'image', src: '/image example/1.jfif' },
-      { type: 'image', src: '/image example/2.png' },
-      { type: 'image', src: '/image example/3.jfif' },
-      { type: 'image', src: '/image example/4.png' },
-      { type: 'image', src: '/image example/5.png' },
-    ],
-  },
-  {
-    id: 'p2',
-    category: 'For Companies',
-    title: 'Willing to prepare you for the Digital Space',
-    subtitle: 'The perseverance of Technician',
-    body:
-      'The future is in your hands. We can help you set up your devices, network, and cloud services so your team can work reliably and securely.',
-    gradient: 'blue',
-    createdAt: new Date(Date.now() - (2 * 60 + 30) * 60 * 1000),
-    media: [
-      { type: 'image', src: '/image example/4.png' },
-      { type: 'image', src: '/image example/5.png' },
-    ],
-  },
-  {
-    id: 'p3',
-    category: 'For Companies',
-    title: 'Willing to prepare you for the Digital Space',
-    subtitle: 'The perseverance of Technician',
-    body:
-      'The future is in your hands. We can help you set up your devices, network, and cloud services so your team can work reliably and securely.',
-    gradient: 'blue',
-    createdAt: new Date(Date.now() - (2 * 60 + 30) * 60 * 1000),
-    media: [{ type: 'image', src: '/image example/2.png' }],
-  },
-];
+function getFallbackPosts(): JournalPost[] {
+  return getJournalFallbackPosts().map((post) => ({
+    id: post.id,
+    category: post.category,
+    title: post.title,
+    subtitle: post.subtitle,
+    body: post.body,
+    gradient: post.gradient,
+    createdAt: post.createdAt,
+    media: post.media,
+  }));
+}
+
+function MediaTile({
+  media,
+  className,
+  play,
+}: {
+  media: JournalMedia;
+  className: string;
+  play: boolean;
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (play) {
+      void video.play().catch(() => {
+        // Browser autoplay policies can still block playback in some contexts.
+      });
+      return;
+    }
+
+    video.pause();
+  }, [play, media.src]);
+
+  return media.type === 'video' ? (
+    <video
+      ref={videoRef}
+      src={media.src}
+      className={className}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+    />
+  ) : (
+    <img src={media.src} alt="" className={className} draggable={false} />
+  );
+}
 
 export default function JournalPage() {
   const router = useRouter();
@@ -114,6 +124,7 @@ export default function JournalPage() {
   const [posts, setPosts] = useState<JournalPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [shareToast, setShareToast] = useState<string>('');
+  const [focusedPostId, setFocusedPostId] = useState<string | null>(null);
 
   const closingModalRef = useRef(false);
   const lastScrollYRef = useRef(0);
@@ -181,7 +192,7 @@ export default function JournalPage() {
 
         if (cancelled) return;
         if (error || !data) {
-          setPosts(SEEDED_POSTS);
+          setPosts(getFallbackPosts());
           return;
         }
 
@@ -199,7 +210,7 @@ export default function JournalPage() {
           const media = images.map((img) => {
             const url = supabase.storage.from(JOURNAL_IMAGES_BUCKET).getPublicUrl(img.path).data
               .publicUrl;
-            return { type: 'image' as const, src: url };
+            return toJournalMedia(url);
           });
 
           return {
@@ -217,7 +228,7 @@ export default function JournalPage() {
         setPosts(mapped);
       } catch {
         if (cancelled) return;
-        setPosts(SEEDED_POSTS);
+        setPosts(getFallbackPosts());
       } finally {
         if (cancelled) return;
         setLoadingPosts(false);
@@ -260,6 +271,10 @@ export default function JournalPage() {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [activePost]);
+
+  useEffect(() => {
+    setActiveMediaIsLandscape(false);
+  }, [activePost?.id, activeMediaIndex]);
 
   useEffect(() => {
     setEngagement((prev) => {
@@ -436,6 +451,13 @@ export default function JournalPage() {
                   setActiveMediaIndex(0);
                   router.replace(`/journal?post=${encodeURIComponent(post.id)}`, { scroll: false });
                 }}
+                onMouseEnter={() => setFocusedPostId(post.id)}
+                onMouseLeave={() => setFocusedPostId((current) => (current === post.id ? null : current))}
+                onFocus={() => setFocusedPostId(post.id)}
+                onBlur={(e) => {
+                  if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+                  setFocusedPostId((current) => (current === post.id ? null : current));
+                }}
                 onKeyDown={(e) => {
                   if (e.key !== 'Enter' && e.key !== ' ') return;
                   e.preventDefault();
@@ -453,9 +475,9 @@ export default function JournalPage() {
                       >
                         {post.category}
                       </div>
-                      <h2 className="mt-1 text-3xl font-bold -tracking-[1px]">
+                      <h2 className="mt-1 text-3xl font-bold leading-[1.12] -tracking-[1px]">
                         <span
-                          className={`bg-clip-text text-transparent -tracking-[1px] ${titleClass} [overflow-wrap:anywhere] break-words`}
+                          className={`inline-block pb-[0.08em] bg-clip-text text-transparent -tracking-[1px] ${titleClass} [overflow-wrap:anywhere] break-words`}
                         >
                           {post.title}
                         </span>
@@ -547,14 +569,11 @@ export default function JournalPage() {
 
                           return (
                             <div key={`${post.id}-m-${idx}`} className={tileClass}>
-                              {m.src ? (
-                                <img
-                                  src={m.src}
-                                  alt=""
-                                  className="h-full w-full object-cover"
-                                  draggable={false}
-                                />
-                              ) : null}
+                              <MediaTile
+                                media={m}
+                                className="h-full w-full object-cover"
+                                play={focusedPostId === post.id}
+                              />
                               {extra > 0 && idx === 3 ? (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/45">
                                   <span className="text-4xl font-bold tracking-[-1px] text-white">+{extra}</span>
@@ -677,7 +696,22 @@ export default function JournalPage() {
                               : 'flex w-full items-center justify-center bg-black'
                           }
                         >
-                          {activeMedia?.src ? (
+                          {activeMedia?.type === 'video' ? (
+                            <video
+                              src={activeMedia.src}
+                              className="max-h-[75vh] w-full object-contain"
+                              autoPlay
+                              controls
+                              loop
+                              muted
+                              playsInline
+                              preload="metadata"
+                              onLoadedMetadata={(e) => {
+                                const video = e.currentTarget;
+                                setActiveMediaIsLandscape(video.videoWidth >= video.videoHeight);
+                              }}
+                            />
+                          ) : activeMedia ? (
                             <img
                               src={activeMedia.src}
                               alt=""
@@ -736,9 +770,9 @@ export default function JournalPage() {
                         >
                           {activePost.category}
                         </div>
-                        <h2 className="mt-1 text-4xl font-bold -tracking-[1px]">
+                        <h2 className="mt-1 text-4xl font-bold leading-[1.12] -tracking-[1px]">
                           <span
-                            className={`bg-clip-text text-transparent -tracking-[1px] ${titleClass} [overflow-wrap:anywhere] break-words`}
+                            className={`inline-block pb-[0.08em] bg-clip-text text-transparent -tracking-[1px] ${titleClass} [overflow-wrap:anywhere] break-words`}
                           >
                             {activePost.title}
                           </span>
