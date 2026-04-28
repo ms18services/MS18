@@ -153,7 +153,7 @@ export default function TextType({
 
   return (
     <Component
-      ref={rootRef as React.Ref<HTMLElement>}
+      ref={rootRef as React.Ref<HTMLDivElement>}
       className={joinClasses(className, 'whitespace-pre-wrap')}
     >
       {typedSegments}
