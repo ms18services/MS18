@@ -4,6 +4,8 @@ import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export default function AdminLoginPage() {
   const searchParams = useSearchParams();
   const from = searchParams.get('from') ?? '/admin';
