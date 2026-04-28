@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import SCarousel, { type ServiceCard } from "./ServicesCarousel"; // same folder
 import DirectionalMarquee from "./DirectionalMarquee";
 import GradualBlur from "./GradualBlur";
@@ -111,7 +111,9 @@ export default function Services() {
         <div className="-mt-8">
           <div className="mx-auto max-w-6xl px-6">
             <GradualBlur blur={18} y={56} start="top 92%" end="top 50%">
-              <SCarousel cards={serviceCards} twoRows />
+              <Suspense fallback={null}>
+                <SCarousel cards={serviceCards} twoRows />
+              </Suspense>
             </GradualBlur>
           </div>
         </div>
