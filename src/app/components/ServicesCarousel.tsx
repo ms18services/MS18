@@ -4,11 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AvailablePill, OnSitePill, RemotePill, UnavailablePill } from "./Pills";
 
 export type ServicePillStatus = "available" | "unavailable" | "remote" | "on_site";
 
 export type ServiceCard = {
+  id?: string;
   title: string;
   description: string;
   iconSrc?: string;
@@ -170,6 +172,9 @@ export default function SCarousel({
   const scrollerBottomRef = useRef<HTMLDivElement | null>(null);
   const modalAnimationFrameRef = useRef<number | null>(null);
   const modalCloseTimeoutRef = useRef<number | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [scrollHeight, setScrollHeight] = useState(0);
 
   const [selectedCard, setSelectedCard] = useState<ServiceCard | null>(null);
@@ -205,7 +210,27 @@ export default function SCarousel({
       setSelectedCard(null);
       modalCloseTimeoutRef.current = null;
     }, 280);
+
+    const serviceId = searchParams?.get("service");
+    if (serviceId) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("service");
+      const next = params.toString();
+      router.replace(next ? `${pathname}?${next}#services` : `${pathname}#services`, { scroll: false });
+    }
   };
+
+  useEffect(() => {
+    const serviceId = searchParams?.get("service");
+    if (!serviceId) return;
+    if (!cards.length) return;
+    if (isModalMounted) return;
+
+    const match = cards.find((c) => String(c.id ?? "") === serviceId);
+    if (match) {
+      openModal(match);
+    }
+  }, [cards, searchParams, isModalMounted]);
 
   useEffect(() => {
     if (!cards.length) return;

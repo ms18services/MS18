@@ -14,6 +14,7 @@ export default function Services() {
 
   const fallbackCards: ServiceCard[] = (Array.isArray(fallbackServices) ? fallbackServices : []).map(
     (r: any) => ({
+      id: typeof r?.id === "string" ? r.id : undefined,
       title: String(r?.title ?? ""),
       description: String(r?.description ?? ""),
       details: typeof r?.details === "string" ? r.details : undefined,
@@ -39,6 +40,7 @@ export default function Services() {
           .slice()
           .sort((a, b) => (Number(a?.sort_order ?? 0) || 0) - (Number(b?.sort_order ?? 0) || 0))
           .map((r) => ({
+            id: typeof r?.id === "string" ? r.id : undefined,
             title: String(r?.title ?? ""),
             description: String(r?.description ?? ""),
             details: typeof r?.details === "string" ? r.details : undefined,

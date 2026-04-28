@@ -1,63 +1,100 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import SearchModal from './SearchModal';
 
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState('home');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const sectionStateRef = useRef<Record<string, { ratio: number; top: number }>>({});
 
   const adminHref = status === 'authenticated' && session ? '/admin' : '/admin/login';
 
   const scrollToSection = (section: string) => (e: React.MouseEvent) => {
-  if (pathname !== '/') return;
-  e.preventDefault();
+    if (pathname !== '/') return;
+    e.preventDefault();
 
-  if (section === 'home') {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth',
-    });
-    return;
-  }
+    setActiveSection(section);
 
-  const element = document.getElementById(section);
+    if (section === 'home') {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+      return;
+    }
 
-  if (element) {
-    element.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }
-};
+    const element = document.getElementById(section);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  };
 
   useEffect(() => {
     const sections = ['home', 'services', 'about', 'contact'];
-    const observers: IntersectionObserver[] = [];
+    const elements = sections
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
 
-    sections.forEach((section) => {
-      const element = document.getElementById(section);
-      if (element) {
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            if (entry.isIntersecting) {
-              setActiveSection(section);
-            }
-          },
-          { threshold: 0.2, rootMargin: '-50px 0px -50px 0px' }
-        );
-        observer.observe(element);
-        observers.push(observer);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const id = (entry.target as HTMLElement).id;
+          sectionStateRef.current[id] = {
+            ratio: entry.isIntersecting ? entry.intersectionRatio : 0,
+            top: entry.boundingClientRect.top,
+          };
+        }
+
+        const best = sections
+          .map((id) => ({ id, ...(sectionStateRef.current[id] ?? { ratio: 0, top: Number.POSITIVE_INFINITY }) }))
+          .filter((s) => s.ratio > 0)
+          .sort((a, b) => {
+            if (b.ratio !== a.ratio) return b.ratio - a.ratio;
+            return Math.abs(a.top) - Math.abs(b.top);
+          })[0];
+
+        if (best?.id) {
+          setActiveSection(best.id);
+        }
+      },
+      {
+        threshold: [0, 0.1, 0.2, 0.35, 0.5, 0.65],
+        rootMargin: '-20% 0px -60% 0px',
       }
-    });
+    );
+
+    for (const el of elements) {
+      observer.observe(el);
+    }
+
+    // Keyboard shortcut for search
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      observers.forEach((observer) => observer.disconnect());
+      observer.disconnect();
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -129,15 +166,19 @@ export default function Navbar() {
           <div className="flex items-center gap-3 ">
             <button
               type="button"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-50"
+              onClick={() => setIsSearchOpen(true)}
+              className={`inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200 ${
+                isSearchOpen ? 'bg-slate-900 text-white' : 'hover:bg-slate-900 hover:text-white text-slate-700'
+              }`}
               aria-label="Search"
+              title="Search (⌘K)"
             >
-              <svg viewBox="0 0 24 24" className="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="7" />
                 <path d="M21 21l-4.3-4.3" />
               </svg>
             </button>
-            <Link
+            {/* <Link
               href={adminHref}
               className="group inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200 hover:bg-[#2F2F2F]"
               aria-label="Admin"
@@ -154,11 +195,12 @@ export default function Navbar() {
                 <path d="M20 21a8 8 0 0 0-16 0" />
                 <circle cx="12" cy="8" r="4" />
               </svg>
-            </Link>
+            </Link> */}
           </div>
 
         </div>
       </nav>
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 }
