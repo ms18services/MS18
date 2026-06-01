@@ -7,13 +7,23 @@ import Image from "next/image";
 import { TextAnimation } from "./components/TextAnimation";
 import Hero3D from "./components/Hero3D";
 import GradualBlur from "./components/GradualBlur";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 export default function Home() {
 
   const headRef = useRef<HTMLHeadingElement | null>(null);
   const [ctaVisible, setCtaVisible] = useState(false);
   const autoScrollFrameRef = useRef<number | null>(null);
+  const isMobile = useSyncExternalStore<boolean | null>(
+    (onStoreChange) => {
+      if (typeof window === "undefined") return () => {};
+      const mediaQuery = window.matchMedia("(max-width: 767px)");
+      mediaQuery.addEventListener("change", onStoreChange);
+      return () => mediaQuery.removeEventListener("change", onStoreChange);
+    },
+    () => window.matchMedia("(max-width: 767px)").matches,
+    () => null,
+  );
 
   const cancelAutoScroll = useCallback(() => {
     if (autoScrollFrameRef.current !== null) {
@@ -88,8 +98,6 @@ export default function Home() {
       cancelAutoScroll();
     };
   }, [cancelAutoScroll]);
-  
-
 
   return (
     <div className="bg-white">
@@ -118,7 +126,106 @@ export default function Home() {
           />
         </div> */}
         
-        <div className="  flex  pt-25 mx-auto grid max-w-6xl grid-cols-1 items-center justify-center gap-2 px-6 grid-cols-[1fr_1.25fr]  h-150">
+        <div className="mx-auto px-4 pb-1 pt-2 md:hidden">
+          <div className="relative left-1 mx-auto flex h-[356px] w-full max-w-[336px] items-center justify-center">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              <Image
+                src="/homepagebackground.svg"
+                alt="Computer Servicing"
+                fill
+                sizes="336px"
+                className="object-cover object-center translate-y-5 scale-[1.18] bg-intro-float2"
+                priority
+              />
+            </div>
+
+            <div className="pointer-events-none absolute left-1 top-5 w-35">
+              <img
+                src="/cd-windows.gif"
+                alt="Computer Servicing"
+                width={120}
+                height={120}
+                className="h-auto  w-full object-contain gif-intro-float"
+              />
+            </div>
+
+            <div className="pointer-events-none w-21 absolute z-20 bottom-9 left-5">
+              <img
+                src="/dino.gif"
+                alt="Computer Servicing"
+                width={500}
+                height={500}
+                className="h-auto  w-full object-contain gif-intro-float"
+              />
+            </div>
+
+            <div className="pointer-events-none  z-20 absolute bottom-14 right-15 w-15">
+              <img
+                src="/mouse_clicker.svg"
+                alt="Computer Servicing"
+                width={100}
+                height={100}
+                className="h-auto  w-full object-contain gif-intro-float"
+              />
+            </div>
+
+            <div className="pointer-events-none z-20 absolute right-12 top-10 w-15">
+              <img
+                src="/microsoft-computer.gif"
+                alt="Computer Servicing"
+                width={100}
+                height={100}
+                className="h-auto w-full object-contain gif-intro-float"
+              />
+            </div>
+          
+            <div className="absolute z-10 mx-auto h-[23rem] w-[21.25rem] -translate-y-4">
+              <div className="h-full w-full">
+              {isMobile === true ? <Hero3D mobile /> : null}
+              </div>
+            </div>
+          </div>
+
+          
+
+
+          <div className="-mt-1 text-center">
+            <h1 className="mx-auto max-w-[500px] text-[2.3rem] leading-[0.7] tracking-tight">
+              <span className="block text-[#522BC9]">
+                <span className="font-miama inline-block align-baseline text-[3.45em] leading-[0.52]">W</span>
+                <span className="-ml-1 font-bold ">e</span>
+                <span className="ml-2 font-bold ">Focus on</span>
+             <span className="text-[#2767BC]"> </span>
+                 <span className=" font-bold  text-[#522BC9]">your</span>
+              </span>
+              <span className=" block font-bold -translate-y-1/4 text-[1.8rem]">
+               
+                <span className="text-[#2767BC]"> Computers</span>
+                <span className="text-[#2767BC]"> </span>
+                 <span className=" bg-gradient-to-br from-[#2767BC] to-[#142699] bg-clip-text py-1 text-transparent">
+                 Needs.
+              </span>
+              </span>
+             
+            </h1>
+
+          <div className="mt-4 mx-auto flex flex-col items-start gap-1">
+              <p className="mx-auto mt-3 font-semibold max-w-xl text-[12px] leading-6 text-[#404040] bg-gradient-to-r from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] inline-block text-transparent bg-clip-text">
+            MS18 Computer Supplies & Services</p>  
+           </div>
+
+
+            <button
+              type="button"
+              onClick={handleFindOutMoreClick}
+              className="mt-2 inline-flex h-5 w-34 items-center justify-center rounded-full border border-black bg-white px-3 text-[9px] font-medium text-slate-900 shadow-sm"
+            >
+              Find out more
+            </button>
+          </div>
+        </div>
+
+        <div className="hidden md:grid pt-25 mx-auto max-w-6xl grid-cols-[1fr_1.25fr] items-center justify-center gap-2 px-6 h-150">
           <h1 ref={headRef} className="pt-18 z-20 size-5  w-140 h-100 size-20 -ml-10">
             
             <div  className="-mt-25 w-[200%] text-[clamp(5rem,5.6vw,3.75rem)] font-bold leading-[0.92] tracking-tighter text-slate-900  ">
@@ -261,7 +368,7 @@ export default function Home() {
 
             <div className="absolute z-10" />
             <div className=" absolute z-11 mx-auto w-190 h-150 -translate-x-10 -mt-96 ">
-              <Hero3D />
+              {isMobile === false ? <Hero3D /> : null}
 
               
 

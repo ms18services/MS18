@@ -2,32 +2,37 @@
 
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Suspense, useRef } from "react";
+import * as THREE from "three";
 import { GLTFLoader } from "three-stdlib";
 
-export default function Hero3D() {
+export default function Hero3D({ mobile = false }: { mobile?: boolean }) {
+  const cameraPosition: [number, number, number] = [0, 0.9, 2.6];
+  const cameraFov = 45;
+  const pointLightPosition: [number, number, number] = mobile ? [3, 2.3, 2] : [3, 1.6, 2];
+
   return (
     <div className="h-full w-full">
-      <Canvas camera={{ position: [0, 0.9, 2.6], fov: 45 }}>
+      <Canvas camera={{ position: cameraPosition, fov: cameraFov }} dpr={mobile ? [1, 1.5] : undefined}>
         <ambientLight intensity={0.5} />
         <spotLight position={[0, -0, 15]} intensity={1} />
         <directionalLight position={[3, -1, -10]} intensity={0.9} />
         <directionalLight position={[1.6,1.1, 2.8]} intensity={0.8} />
-        <pointLight position={[3, 1, 2]} intensity={10} />
+        <pointLight position={pointLightPosition} intensity={10} />
        
 
         <hemisphereLight color="#1b4ef7" groundColor="#9610f0" intensity={0.9} />
 
         <Suspense fallback={null}>
-          <HeroModel />
+          <HeroModel mobile={mobile} />
         </Suspense>
       </Canvas>
     </div>
   );
 }
 
-function HeroModel() {
+function HeroModel({ mobile = false }: { mobile?: boolean }) {
   const gltf = useLoader(GLTFLoader, "/ms183.glb");
-  const groupRef = useRef<any>(null);
+  const groupRef = useRef<THREE.Group | null>(null);
   const hoveringRef = useRef(false);
   const startRef = useRef<number | null>(null);
 
@@ -55,6 +60,7 @@ function HeroModel() {
         startRef={startRef}
         baseRotX={baseRotX}
         baseRotY={baseRotY}
+        mobile={mobile}
       />
     </group>
   );
@@ -66,12 +72,14 @@ function ModelMotion({
   startRef,
   baseRotX,
   baseRotY,
+  mobile,
 }: {
-  groupRef: React.MutableRefObject<any>;
+  groupRef: React.MutableRefObject<THREE.Group | null>;
   hoveringRef: React.MutableRefObject<boolean>;
   startRef: React.MutableRefObject<number | null>;
   baseRotX: number;
   baseRotY: number;
+  mobile: boolean;
 }) {
   const { camera } = useThree();
   const yawOffsetRef = useRef(0);
@@ -123,7 +131,7 @@ function ModelMotion({
     // Mouse tracking (subtle)
     const targetRotX = baseRotX + my * 0.22;
     const targetRotY = baseRotY + yawOffsetRef.current + mx * 0.28;
-    const targetPosY = -0.1 + floatY;
+    const targetPosY = (mobile ? 0.12 : -0.1) + floatY;
 
     // Smooth damping
     const damp = Math.min(1, delta * 6);
@@ -132,7 +140,7 @@ function ModelMotion({
     g.position.y += (targetPosY - g.position.y) * damp;
 
     // Keep camera centered toward the model
-    camera.lookAt(0, 0.1, 0);
+    camera.lookAt(0, mobile ? 0.24 : 0.1, 0);
   });
 
   return null;

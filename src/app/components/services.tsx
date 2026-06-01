@@ -81,7 +81,7 @@ export default function Services() {
       id="services"
       className=" border-t border-slate-100 bg-slate-50/50 scroll-mt-24"
     >
-      <div className="mx-auto max-w-6xl px-6 py-14">
+      <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14">
         {/* marquee */}
         <div
           ref={marqueeWrapRef}
@@ -99,7 +99,7 @@ export default function Services() {
                     alt="Services"
                     width={700}
                     height={700}
-                    className="mx-8 shrink-0"
+                    className="mx-3 h-auto w-[min(76vw,18rem)] shrink-0 md:mx-6 md:w-[28rem] lg:w-[34rem]"
                     priority={i === 0}
                   />
                 ))}
@@ -108,8 +108,8 @@ export default function Services() {
           </div>
         </div>
 
-        <div className="-mt-8">
-          <div className="mx-auto max-w-6xl px-6">
+        <div className="-mt-2 md:-mt-8">
+          <div className="mx-auto max-w-6xl px-0 md:px-6">
             <GradualBlur blur={18} y={56} start="top 92%" end="top 50%">
               <Suspense fallback={null}>
                 <SCarousel cards={serviceCards} twoRows />

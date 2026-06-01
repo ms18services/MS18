@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import useIsMobile from "./useIsMobile";
 
 export type TeamCard = {
   name: string;
@@ -148,6 +149,7 @@ export default function TeamCarousel3D({
   initialIndex?: number;
   className?: string;
 }) {
+  const isMobile = useIsMobile();
   const safeInitialIndex = useMemo(() => {
     if (cards.length === 0) return 0;
     const normalized = ((initialIndex % cards.length) + cards.length) % cards.length;
@@ -179,6 +181,53 @@ export default function TeamCarousel3D({
   }, [go]);
 
   if (cards.length === 0) return null;
+
+  if (isMobile) {
+    const activeCard = cards[activeIndex];
+
+    return (
+      <div className={className}>
+        <div className="mx-auto flex max-w-[340px] items-end justify-center gap-[6px] px-0">
+          {cards.map((card, i) => {
+            const isActive = i === activeIndex;
+            const size = isActive ? "h-[118px] w-[118px]" : i === 1 || i === 3 ? "h-[74px] w-[74px]" : "h-[38px] w-[38px]";
+
+            return (
+              <button
+                key={`${card.name}-${i}`}
+                type="button"
+                onClick={() => setActiveIndex(i)}
+                aria-label={`Select ${card.name}`}
+                className={`shrink-0 rounded-full bg-gradient-to-br from-[#6436da] to-[#4729a8] transition-all duration-300 ${size} ${
+                  isActive ? "shadow-[0_18px_40px_rgba(82,43,201,0.32)]" : "opacity-95"
+                }`}
+              />
+            );
+          })}
+        </div>
+
+        <div className="mt-5 text-center">
+          <div className="flex items-start justify-center gap-2 text-[10px] font-semibold uppercase leading-tight tracking-[0.03em] text-[#1f3f9a]">
+            <svg
+              viewBox="0 0 24 24"
+              className="mt-[1px] h-4 w-4 shrink-0 text-[#4a34b7]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M14 3H8a2 2 0 0 0-2 2v14l4-2 4 2V5a2 2 0 0 0-2-2Z" />
+              <path d="M14 3h2a2 2 0 0 1 2 2v14l-4-2" />
+            </svg>
+            <span className="max-w-[210px] text-left">{activeCard.name}</span>
+          </div>
+          <p className="mt-1 text-[9px] leading-tight text-slate-500">{activeCard.role}</p>
+        </div>
+      </div>
+    );
+  }
 
   const visibleRange = 2;
   const cardWidth = 320;

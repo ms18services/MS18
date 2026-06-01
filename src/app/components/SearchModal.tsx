@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import servicesData from '@/data/services.json';
 import journalData from '@/data/journal-fallback.json';
@@ -21,7 +20,6 @@ interface SearchModalProps {
 
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -53,10 +51,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     };
   }, [isOpen, onClose]);
 
-  useEffect(() => {
+  const results = useMemo(() => {
     if (!query.trim()) {
-      setResults([]);
-      return;
+      return [];
     }
 
     const searchTerm = query.toLowerCase();
@@ -96,7 +93,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       }
     });
 
-    setResults(foundResults.slice(0, 8));
+    return foundResults.slice(0, 8);
   }, [query]);
 
   const handleResultClick = (href: string) => {
@@ -113,7 +110,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     >
       <div
         ref={modalRef}
-        className="w-full max-w-sm rounded-xl translate-x-[320px] bg-white shadow-2xl "
+        className="w-full max-w-sm rounded-xl bg-white shadow-2xl md:translate-x-[320px]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-3 py-2 bg-slate-50 rounded-full shadow-lg">
@@ -223,7 +220,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               </div>
             ) : query ? (
               <div className="px-4 py-4 text-center text-xs text-slate-500">
-                No results found for "{query}"
+                No results found for &quot;{query}&quot;
               </div>
             ) : null}
           </div>

@@ -45,9 +45,9 @@ export default function IPartners() {
 
   return (  
   
-    <section className="marquee-speed-partners w-full mx-auto -mt-13 py-5  scale-60">
+    <section className="marquee-speed-partners w-full mx-auto -mt-6 py-3 scale-[0.42] md:-mt-13 md:py-5 md:scale-60">
       <div className="mx-auto max-w-8xl px-6">
-        <h1 className="mx-auto w-max grayscale whitespace-nowrap text-center text-[30px] -tracking-[2px] font-semibold bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-5% via-50% to-100% bg-clip-text text-transparent cursor-default hover:grayscale-0 transition-all duration-300 ">
+        <h1 className="mx-auto w-max grayscale whitespace-nowrap text-center text-[18px] font-semibold -tracking-[1px] bg-gradient-to-br from-[#4873FF] via-[#1629A6] to-[#142699] from-5% via-50% to-100% bg-clip-text text-transparent cursor-default transition-all duration-300 hover:grayscale-0 md:text-[30px] md:-tracking-[2px]">
           MS18 Computer <span className="  bg-gradient-to-br from-[#984CD3] via-[#522BC9] to-[#411563] to-[90%] bg-clip-text text-transparent "> Supplies & Services </span> Partners are:
         </h1>
       </div>
@@ -56,7 +56,7 @@ export default function IPartners() {
         onMouseEnter={() => setIsLoopHovered(true)}
         onMouseLeave={() => setIsLoopHovered(false)}
       >
-        <div className="blur-[2px] [transform:scaleX(-1)] marquee-fade mt-15 relative left-1/2 w-[119vw] -translate-x-1/2 overflow-x-hidden overflow-y-visible py-4 opacity-70">
+        <div className="blur-[2px] [transform:scaleX(-1)] marquee-fade mt-7 relative left-1/2 w-[132vw] -translate-x-1/2 overflow-x-hidden overflow-y-visible py-4 opacity-70 md:mt-15 md:w-[119vw]">
           <LogoLoop
             logos={smallPartnerLogos}
             direction="right"
@@ -71,7 +71,7 @@ export default function IPartners() {
           />
         </div>
 
-        <div className="marquee-fade -mt-10 relative left-1/2 w-[110vw] -translate-x-1/2 overflow-x-hidden overflow-y-visible py-5">
+        <div className="marquee-fade -mt-6 relative left-1/2 w-[126vw] -translate-x-1/2 overflow-x-hidden overflow-y-visible py-5 md:-mt-10 md:w-[110vw]">
           <LogoLoop
             logos={largePartnerLogos}
             direction="right"

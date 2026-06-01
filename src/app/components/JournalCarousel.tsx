@@ -215,10 +215,10 @@ function CarouselCard({
           href={`/journal?post=${encodeURIComponent(post.id)}`}
           className={
             theme === 'blue'
-              ? 'group absolute bottom-8 right-8 flex items-center justify-center rounded-full border-2 border-[#2767BC] px-7 py-1.5 text-[13px] font-semibold bg-white shadow-xl transition-all duration-300 hover:bg-gradient-to-br hover:from-[#2767BC] hover:text-medium hover:to-[#142699]'
+              ? 'group absolute bottom-4 right-4 flex items-center justify-center rounded-full border-2 border-[#2767BC] bg-white px-4 py-1 text-[10px] font-semibold shadow-xl transition-all duration-300 hover:bg-gradient-to-br hover:from-[#2767BC] hover:text-medium hover:to-[#142699] md:bottom-8 md:right-8 md:px-7 md:py-1.5 md:text-[13px]'
               : theme === 'green'
-              ? 'group absolute bottom-8 right-8 flex items-center justify-center rounded-full border-2 border-[#3CB244] px-7 py-1.5 text-[12px] font-semibold bg-white shadow-xl transition-all duration-300 hover:bg-gradient-to-br hover:from-[#3CB244] hover:text-medium hover:via-[#2A611C] hover:to-[#142E0D]'
-              : 'group absolute bottom-8 right-8 flex items-center justify-center rounded-full border-2 border-[#9A42E6] bg-white px-7 py-1.5 text-[12px] font-semibold shadow-xl transition-all duration-300 hover:bg-gradient-to-b hover:from-[#9A42E6] hover:text-medium hover:to-[#562580]'
+              ? 'group absolute bottom-4 right-4 flex items-center justify-center rounded-full border-2 border-[#3CB244] bg-white px-4 py-1 text-[10px] font-semibold shadow-xl transition-all duration-300 hover:bg-gradient-to-br hover:from-[#3CB244] hover:text-medium hover:via-[#2A611C] hover:to-[#142E0D] md:bottom-8 md:right-8 md:px-7 md:py-1.5 md:text-[12px]'
+              : 'group absolute bottom-4 right-4 flex items-center justify-center rounded-full border-2 border-[#9A42E6] bg-white px-4 py-1 text-[10px] font-semibold shadow-xl transition-all duration-300 hover:bg-gradient-to-b hover:from-[#9A42E6] hover:text-medium hover:to-[#562580] md:bottom-8 md:right-8 md:px-7 md:py-1.5 md:text-[12px]'
           }
         >
           <p
@@ -234,7 +234,7 @@ function CarouselCard({
           </p>
         </Link>
 
-        <div className="flex flex-col gap-6 p-5 pl-3 pb-16 md:flex-row md:items-start md:gap-10 md:p-7 md:pl-6 md:pb-16">
+        <div className="flex flex-col gap-4 p-4 pb-14 md:flex-row md:items-start md:gap-10 md:p-7 md:pl-6 md:pb-16">
           {post.media.length > 0 ? (
             <div className="flex shrink-0 justify-center md:items-center md:justify-start">
               {(() => {
@@ -248,7 +248,7 @@ function CarouselCard({
 
                 if (count <= 1) {
                   return (
-                    <div className="h-[280px] w-full max-w-[460px] overflow-hidden rounded-[22px] bg-transparent md:translate-y-5 md:h-[280px] md:w-[460px]">
+                    <div className="h-[190px] w-full max-w-[260px] overflow-hidden rounded-[22px] bg-transparent md:translate-y-5 md:h-[280px] md:max-w-[460px] md:w-[460px]">
                       <MediaTile
                         media={primary}
                         className="h-full w-full object-cover"
@@ -262,7 +262,7 @@ function CarouselCard({
 
                 if (count === 2) {
                   return (
-                    <div className="flex h-[260px] w-full max-w-[560px] gap-3 md:translate-y-5 md:h-[260px] md:w-[520px]">
+                    <div className="flex h-[170px] w-full max-w-[260px] gap-2 md:translate-y-5 md:h-[260px] md:max-w-[560px] md:gap-3 md:w-[520px]">
                       <div className="relative h-full flex-[3] overflow-hidden rounded-[22px] bg-transparent">
                         <MediaTile
                           media={primary}
@@ -288,7 +288,7 @@ function CarouselCard({
                 }
 
                 return (
-                  <div className="flex h-[250px] w-full max-w-[520px] gap-3 md:translate-y-5 md:h-[250px] md:w-[520px]">
+                  <div className="flex h-[170px] w-full max-w-[260px] gap-2 md:translate-y-5 md:h-[250px] md:max-w-[520px] md:gap-3 md:w-[520px]">
                     <div className="relative h-full flex-1 overflow-hidden rounded-[22px] bg-transparent">
                       <MediaTile
                         media={primary}
@@ -298,7 +298,7 @@ function CarouselCard({
                         controls={soundEnabled}
                       />
                     </div>
-                    <div className="flex h-full w-[160px] flex-col gap-3">
+                    <div className="flex h-full w-[82px] flex-col gap-2 md:w-[160px] md:gap-3">
                       <div className="relative flex-1 overflow-hidden rounded-[18px] bg-transparent">
                         {secondary ? (
                           <MediaTile
@@ -333,24 +333,22 @@ function CarouselCard({
             </div>
           ) : null}
 
-          <div className="min-w-0 pt-2 w-full text-left">
-            <div
-              className={`text-[14px] -tracking-[1px] font-bold bg-clip-text text-transparent ${categoryClass}`}
-            >
+          <div className="min-w-0 w-full pt-1 text-left md:pt-2">
+            <div className={`text-[10px] font-bold tracking-tight bg-clip-text text-transparent md:text-[14px] md:-tracking-[1px] ${categoryClass}`}>
               {post.category}
             </div>
-            <div className="mt-1 text-[20px] font-bold leading-[1.12] -tracking-[1px]">
+            <div className="mt-1 text-[16px] font-bold leading-[1.08] tracking-tight md:text-[20px] md:-tracking-[1px]">
               <span
-                className={`block bg-clip-text text-transparent w-full pb-[0.08em] text-[2.1em] leading-[1.12] -tracking-[2px] ${titleClass} [overflow-wrap:anywhere] break-words`}
+                className={`block w-full bg-clip-text pb-[0.08em] text-[1.58em] leading-[1.05] tracking-tight text-transparent [overflow-wrap:anywhere] break-words md:text-[2.1em] md:-tracking-[2px] ${titleClass}`}
               >
                 {post.title}
               </span>
             </div>
             {post.subtitle && (
-              <div className="mt-1 text-[1.2em] font-bold text-[#616161] -tracking-[1px]">{post.subtitle}</div>
+              <div className="mt-1 text-[12px] font-bold tracking-tight text-[#616161] md:text-[1.2em] md:-tracking-[1px]">{post.subtitle}</div>
             )}
 
-            <div className="mt-2 font-semibold text-[11px] leading-[1.2] text-slate-500 [overflow-wrap:anywhere] break-words">
+            <div className="mt-2 text-[9px] font-semibold leading-[1.25] text-slate-500 [overflow-wrap:anywhere] break-words md:text-[11px] md:leading-[1.2]">
               {isExpanded ? (
                 <p>
                   {post.body}{' '}
@@ -419,9 +417,9 @@ export default function JournalCarousel({
       return Array.from({ length: 3 }).map((_, i) => (
         <div key={`sk-${i}`} className="relative mt-5 mx-auto w-full max-w-4xl overflow-visible">
           <div className="relative w-full min-h-[290px] overflow-hidden rounded-[28px] shadow-xl ring-1 ring-black/5">
-            <div className="flex flex-col gap-6 p-5 pb-16 md:flex-row md:items-start md:gap-10 md:p-7 md:pb-16">
+            <div className="flex flex-col gap-4 p-4 pb-14 md:flex-row md:items-start md:gap-10 md:p-7 md:pb-16">
               <div className="flex shrink-0 items-center gap-6">
-                <div className="ml-40 translate-y-5 h-[200px] w-[160px] rounded-[22px] bg-slate-200 animate-pulse md:h-[190px] md:w-[176px]" />
+                <div className="h-[170px] w-[260px] rounded-[22px] bg-slate-200 animate-pulse md:ml-40 md:translate-y-5 md:h-[190px] md:w-[176px]" />
               </div>
               <div className="min-w-0 pt-2 w-full">
                 <div className="h-4 w-32 rounded-full bg-slate-200 animate-pulse" />
@@ -646,7 +644,7 @@ export default function JournalCarousel({
     <div className={className}>
       <div className="relative">
         {dotsPosition === 'belowHeader' ? (
-          <div className="pointer-events-auto mb-2 flex justify-end pr-1">
+          <div className="pointer-events-auto mb-4 flex justify-center pr-0 md:mb-2 md:justify-end md:pr-1">
             <div className="flex items-center gap-2">
               {slides.map((_, i) => (
                 <button
@@ -695,7 +693,7 @@ export default function JournalCarousel({
         )}
 
         {dotsPosition === 'overlay' ? (
-          <div className="pointer-events-auto absolute scale-120 right-25 top-[58px] z-30 flex items-center gap-2">
+          <div className="pointer-events-auto absolute right-3 top-3 z-30 flex items-center gap-2 md:right-25 md:top-[58px] md:scale-120">
             {slides.map((_, i) => (
               <button
                 key={i}

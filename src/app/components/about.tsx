@@ -12,10 +12,80 @@ import PopInOnView from './PopInOnView';
 import Shine from './Shine';
 import SparklesGraphic from './SparklesGraphic';
 import TheJournal from './thejournal';
+import useIsMobile from './useIsMobile';
 import WavesBackground from './WavesBackground';
 
 export default function About() {
   const decorTriggerRef = useRef<HTMLDivElement | null>(null);
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <section id="about" className="border-t border-slate-100 bg-white scroll-mt-15">
+        <div className="mx-auto max-w-6xl px-6 py-8">
+          <div className="relative overflow-hidden">
+            <div className="grid grid-cols-[1.05fr_1fr] items-start gap-3">
+              <div className="relative h-[320px]">
+                <div className="absolute -left-16 top-8 h-[270px] w-[270px] opacity-95">
+                  <SparklesGraphic className="h-full w-full object-contain" />
+                </div>
+                <img
+                  src="/about-imageleft2.png"
+                  alt=""
+                  className="absolute -left-18 bottom-0 h-[280px] w-auto max-w-none object-contain"
+                />
+              </div>
+
+              <div className="relative z-10 pt-4">
+                <h2 className="text-[4rem] font-bold leading-[0.82] tracking-tight">
+                  <span className="block bg-gradient-to-r from-[#4873FF] via-[#1629A6] to-[#142699] bg-clip-text text-transparent">
+                    About
+                  </span>
+                  <span className="block bg-gradient-to-r from-[#9A42E6] to-[#562580] bg-clip-text text-transparent">
+                    Us.
+                  </span>
+                </h2>
+
+                <p className="mt-4 text-[1.55rem] font-bold leading-[0.95] text-[#4873FF]">
+                  Get to know us
+                </p>
+                <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.05em] text-slate-500">
+                  &quot;We focus on your computers needs&quot;
+                </p>
+
+                <div className="mt-3 space-y-3 text-[9px] leading-[1.45] text-slate-600">
+                  <p>
+                    We provide reliable computer repair services focused on fixing broken components,
+                    replacing faulty parts, and restoring your device&apos;s performance.
+                  </p>
+                  <p>
+                    Our goal is to deliver honest, efficient support for work, study, or everyday use
+                    while building long-term partnerships with clients.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="-mt-8 flex justify-end">
+              <img src="/image.png" alt="" className="w-[150px] object-contain" />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <MeetTheTeam />
+        </div>
+
+        <div>
+          <IPartners />
+        </div>
+
+        <div>
+          <TheJournal />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="about" className="border-t border-slate-100 bg-white scroll-mt-15 -mt-2">

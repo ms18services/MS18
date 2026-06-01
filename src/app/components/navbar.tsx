@@ -4,17 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import SearchModal from './SearchModal';
 
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState('home');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
-  const { data: session, status } = useSession();
   const sectionStateRef = useRef<Record<string, { ratio: number; top: number }>>({});
-
-  const adminHref = status === 'authenticated' && session ? '/admin' : '/admin/login';
 
   const scrollToSection = (section: string) => (e: React.MouseEvent) => {
     if (pathname !== '/') return;
@@ -99,12 +95,12 @@ export default function Navbar() {
   }, []);
 
   const linkClasses = (section: string) =>
-    `text-sm font-medium ${
+    `text-[7px] font-medium md:text-sm ${
       pathname === '/' && activeSection === section ? 'text-purple-600 font-bold' : 'text-slate-600'
     } hover:text-slate-900`;
 
   const routeLinkClasses = (href: string) =>
-    `text-sm font-medium ${pathname === href ? 'text-purple-600 font-bold' : 'text-slate-600'} hover:text-slate-900`;
+    `text-[7px] font-medium md:text-sm ${pathname === href ? 'text-purple-600 font-bold' : 'text-slate-600'} hover:text-slate-900`;
 
   const scrollToTopIfOnRoute = (href: string) => (e: React.MouseEvent) => {
     if (pathname !== href) return;
@@ -114,32 +110,34 @@ export default function Navbar() {
 
   return (
     <header className="h-18 sticky top-0 z-50 bg-white/50 backdrop-blur border-slate-100">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6 md:py-6">
         <Link href="/" className="flex group items-center gap-3 font-semibold tracking-tight text-slate-900">
-          <div className=' opacity-100 w-auto cursor-default group-hover:hidden absolute z-19 translate-y-4 -translate-x-6.5 transition-opacity  duration-500'>
+          <div className='opacity-100 w-auto cursor-default group-hover:hidden absolute z-19 translate-y-2 -translate-x-3 transition-opacity duration-500 md:translate-y-4 md:-translate-x-6.5'>
           <Image
             src="/ms18logo.svg"
             alt="Computer Servicing"
             width={100}
             height={100}
+            className="h-auto w-[54px] md:w-[100px]"
             priority
           />
           </div>
 
-          <div className='opacity-0 w-auto cursor-default group-hover:opacity-100 absolute z-20 translate-y-4 -translate-x-6.5 transition-opacity duration-500'>
+          <div className='opacity-0 w-auto cursor-default group-hover:opacity-100 absolute z-20 translate-y-2 -translate-x-3 transition-opacity duration-500 md:translate-y-4 md:-translate-x-6.5'>
             <Image
               src="/ms18logofull.svg"
               alt="Computer Servicing"
               width={100}
               height={100}
+              className="h-auto w-[54px] md:w-[100px]"
               priority
             />
           </div>
 
         </Link>
 
-        <div className="flex items-center gap-6 mt-2 mr-10">
-          <div className="hidden items-center gap-8 md:flex">
+        <div className="mt-1 mr-0 flex items-center gap-2 md:mt-2 md:mr-10 md:gap-6">
+          <div className="flex items-center gap-2 md:gap-8">
             <Link href="/#home" onClick={scrollToSection("home")} className={linkClasses("home")}>
               Home
             </Link>
@@ -163,11 +161,11 @@ export default function Navbar() {
             
           </div>
 
-          <div className="flex items-center gap-3 ">
+          <div className="flex items-center gap-1 md:gap-3">
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className={`inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200 ${
+              className={`inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors duration-200 md:h-9 md:w-9 ${
                 isSearchOpen ? 'bg-slate-900 text-white' : 'hover:bg-slate-900 hover:text-white text-slate-700'
               }`}
               aria-label="Search"
