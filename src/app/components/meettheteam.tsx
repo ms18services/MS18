@@ -8,28 +8,28 @@ export default function MeetTheTeam() {
   const isMobile = useIsMobile();
   const teamCards: TeamCard[] = [
     {
-      name: "Alex Tan",
-      role: "Hardware Specialist",
+      name: "Angela S. Medina",
+      role: "Sales/Operations Manager",
       imageSrc: "/face/final/angie.jpg",
     },
     {
-      name: "Mika Lim",
-      role: "Software & Setup",
+      name: "Teresita Pable",
+      role: "Accounting In-charge",
       imageSrc: "/face/final/cindy.jpg",
     },
     {
-      name: "Jordan Lee",
-      role: "Diagnostics",
+      name: "Romeo Sastellas",
+      role: "Logistics",
       imageSrc: "/face/final/romeo.jpg",
     },
     {
-      name: "Sam Chen",
-      role: "Data Recovery",
+      name: "Benjaming G. Singcol Sr.",
+      role: "IT Department",
       imageSrc: "/face/final/benjie.jpg",
     },
     {
-      name: "Aisha Noor",
-      role: "Security",
+      name: "Ricardo Singcol Sr.",
+      role: "IT Department Head",
       imageSrc: "/face/final/anjun.jpg",
     },
     

@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AvailablePill, OnSitePill, RemotePill, UnavailablePill } from "./Pills";
-import useIsMobile from "./useIsMobile";
 
 export type ServicePillStatus = "available" | "unavailable" | "remote" | "on_site";
 
@@ -163,7 +162,6 @@ export default function SCarousel({
   cards: ServiceCard[];
   twoRows?: boolean;
 }) {
-  const isMobile = useIsMobile();
   const HIGHLIGHT_COUNT = 2;
   const HIGHLIGHT_INTERVAL_MS = 1000;
   const HIGHLIGHT_DURATION_MS = 1200;
@@ -389,7 +387,7 @@ export default function SCarousel({
         role="dialog"
         aria-modal="true"
         aria-label={selectedCard.title}
-        className={`relative h-auto max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-[0_30px_90px_rgba(2,6,23,0.45)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:h-[350px] ${
+        className={`relative h-[300px] w-full max-w-5xl rounded-lg overflow-hidden bg-white shadow-[0_30px_90px_rgba(2,6,23,0.45)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:h-[350px] ${
           isModalVisible ? "translate-y-0 scale-100 opacity-100" : "translate-y-6 scale-[0.97] opacity-0"
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -403,8 +401,8 @@ export default function SCarousel({
           <span className="text-xl leading-none">×</span>
         </button>
 
-        <div className="grid h-full grid-cols-1 gap-0 md:grid-cols-[360px_1fr]">
-          <div className="relative h-48 w-full bg-slate-100 md:h-full md:w-auto">
+        <div className="grid h-full grid-cols-1 gap-10 md:grid-cols-[360px_1fr]">
+          <div className="relative w-100 h-full bg-slate-100">
             <Image
               src={selectedCard.modalImageSrc ?? '/about-image.jpg'}
               alt=""
@@ -413,7 +411,7 @@ export default function SCarousel({
             />
           </div>
 
-          <div className="hide-scrollbar h-full overflow-y-auto p-5 md:p-8">
+          <div className="hide-scrollbar h-full overflow-y-auto p-8">
             <div className="flex items-start justify-between gap-6">
               <div className="min-w-0">
                 <div className="flex items-start gap-3">
@@ -426,7 +424,7 @@ export default function SCarousel({
                       className="mt-1 h-20 w-20 shrink-0 object-contain"
                     />
                   ) : null}
-                  <h3 className="ml-1 w-full bg-gradient-to-l from-[#2767BC] via-[#1629A6] to-[#142699] from-10% via-100% to-100% bg-clip-text text-[22px] font-bold leading-[1.05] tracking-[-0.5px] text-transparent md:ml-2 md:w-100 md:text-[35px]">
+                  <h3 className="ml-2 bg-gradient-to-l from-[#2767BC] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text text-[35px] font-bold leading-[1.05] tracking-[-0.5px]  w-100  ">
                     {selectedCard.title.toUpperCase()}
                   </h3>
                 </div>
@@ -445,7 +443,7 @@ export default function SCarousel({
               )}
             </div>
 
-            <div className="mt-4 mr-0 text-[12px] leading-5 text-slate-600 md:mr-10 md:text-[13.5px]">
+            <div className="mt-4 text-[13.5px] mr-10 leading-5 text-slate-600">
               {selectedCard.details ?? selectedCard.description}
             </div>
 
@@ -491,38 +489,6 @@ export default function SCarousel({
 
   return (
     <>
-      {isMobile ? (
-        <div className="px-1">
-          <div className="grid grid-cols-3 gap-x-3 gap-y-8 px-1 py-4">
-            {cards.slice(0, 6).map((card) => (
-              <button
-                key={`mobile-${card.title}`}
-                type="button"
-                onClick={() => openModal(card)}
-                className="flex min-h-[148px] flex-col items-center text-center"
-              >
-                <div className="flex h-20 items-center justify-center">
-                  {card.iconSrc ? (
-                    <Image
-                      src={card.iconSrc}
-                      alt=""
-                      width={96}
-                      height={96}
-                      className="h-16 w-16 object-contain"
-                    />
-                  ) : null}
-                </div>
-                <h3 className="mt-2 text-[10px] font-semibold leading-3 text-slate-800">
-                  {card.title}
-                </h3>
-                <p className="mt-2 line-clamp-3 text-[7px] leading-[1.25] text-slate-500">
-                  {card.description}
-                </p>
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : (
       <div
         ref={containerRef}
         className="relative"
@@ -643,7 +609,6 @@ export default function SCarousel({
           }
         `}</style>
       </div>
-      )}
 
       {modal && typeof document !== "undefined" ? createPortal(modal, document.body) : null}
     </>
