@@ -180,10 +180,12 @@ export default function SCarousel({
   const [selectedCard, setSelectedCard] = useState<ServiceCard | null>(null);
   const [isModalMounted, setIsModalMounted] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [highlightedTitles, setHighlightedTitles] = useState<Set<string>>(() => new Set());
   const lastHighlightedRef = useRef<Set<string>>(new Set());
 
   const openModal = (card: ServiceCard) => {
+    if (isMobile) return; // disable modal on small screens
     if (modalCloseTimeoutRef.current !== null) {
       window.clearTimeout(modalCloseTimeoutRef.current);
       modalCloseTimeoutRef.current = null;
@@ -222,6 +224,7 @@ export default function SCarousel({
 
   useEffect(() => {
     const serviceId = searchParams?.get("service");
+    if (isMobile) return; // don't auto-open modal on mobile
     if (!serviceId) return;
     if (!cards.length) return;
     if (isModalMounted) return;
@@ -231,6 +234,19 @@ export default function SCarousel({
       openModal(match);
     }
   }, [cards, searchParams, isModalMounted]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const onChange = () => setIsMobile(mq.matches);
+    onChange();
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else mq.addListener(onChange);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
+      else mq.removeListener(onChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!cards.length) return;
@@ -376,7 +392,7 @@ export default function SCarousel({
     };
   }, []);
 
-  const modal = isModalMounted && selectedCard ? (
+  const modal = isModalMounted && selectedCard && !isMobile ? (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center px-6 transition-[background-color,opacity] duration-300 ease-out ${
         isModalVisible ? "bg-black/70 opacity-100" : "bg-black/0 opacity-0"
@@ -412,19 +428,19 @@ export default function SCarousel({
           </div>
 
           <div className="hide-scrollbar h-full overflow-y-auto p-8">
-            <div className="flex items-start justify-between gap-6">
+            <div className="flex items-start j ustify-between gap-3 md:gap-6">
               <div className="min-w-0">
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-2 sm:gap-3">
                   {selectedCard.iconSrc ? (
                     <Image
                       src={selectedCard.iconSrc}
                       alt=""
-                      width={40}
-                      height={40}
-                      className="mt-1 h-20 w-20 shrink-0 object-contain"
+                      width={36}
+                      height={36}
+                      className="mt-1 h-16 w-16 shrink-0 object-contain"
                     />
                   ) : null}
-                  <h3 className="ml-2 bg-gradient-to-l from-[#2767BC] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text text-[35px] font-bold leading-[1.05] tracking-[-0.5px]  w-100  ">
+                  <h3 className="ml-2 bg-gradient-to-l from-[#2767BC] via-[#1629A6] to-[#142699] from-10% via-100% to-100% text-transparent bg-clip-text text-[24px] sm:text-[25px] font-bold leading-[1.05] tracking-[-0.5px] w-100">
                     {selectedCard.title.toUpperCase()}
                   </h3>
                 </div>
@@ -497,17 +513,17 @@ export default function SCarousel({
           minHeight: "10vh",
         }}
       >
-        <div
-          className={
-            twoRows
-              ? 'sticky top-0 h-screen flex flex-col -mb-20 justify-center gap-5 overflow-hidden'
-              : 'sticky top-0 h-[60vh] flex items-center overflow-hidden'
-          }
+          <div
+            className={
+              twoRows
+                ? 'sticky top-0 h-[70vh] md:h-screen flex flex-col -mb-20 justify-center gap-3 md:gap-5 overflow-hidden'
+                : 'sticky top-0 h-[60vh] flex items-center overflow-hidden'
+            }
           style={{ top: stickyTopPx }}
         >
           <div
             ref={scrollerTopRef}
-            className="hide-scrollbar flex gap-15 overflow-x-scroll py-2 px-6 md:px-0"
+            className="hide-scrollbar flex gap-3 md:gap-15 overflow-x-scroll py-2 px-2 md:px-0"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {cards.map((card) => (
@@ -515,20 +531,20 @@ export default function SCarousel({
                 key={card.title}
                 type="button"
                 onClick={() => openModal(card)}
-                className="shrink-0 w-[85%] sm:w-[45%] md:w-[30%] flex flex-col items-center text-left"
+                className="shrink-0 w-[55%] sm:w-[45%] md:w-[30%] flex flex-col items-center text-left scale-[0.8] sm:scale-100"
               >
-                <div className="relative w-full max-w-sm pb-18">
-                  <TiltedCard className="mx-auto h-56 w-full max-w-[18rem]">
-                    <div className=" relative h-full w-full overflow-hidden rounded-[28px] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,255,0.92)_100%)]">
-                      <div className="pointer-events-none absolute inset-x-8 top-0 h-16 rounded-full bg-[radial-gradient(circle,rgba(72,115,255,0.18)_0%,transparent_70%)] blur-2xl" />
+                <div className="relative w-full max-w-[11.5rem] sm:max-w-sm pb-10">
+                  <TiltedCard className="mx-auto h-[10rem] w-full max-w-[11.5rem] sm:h-56 sm:max-w-[18rem]">
+                    <div className=" relative h-full w-full overflow-hidden rounded-[24px] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,255,0.92)_100%)]">
+                      <div className="pointer-events-none absolute inset-x-6 top-0 h-14 rounded-full bg-[radial-gradient(circle,rgba(72,115,255,0.14)_0%,transparent_70%)] blur-lg" />
                       <div className="relative flex h-full items-center justify-center">
                         {card.iconSrc ? (
                           <Image
                               src={card.iconSrc}
                               alt=""
-                              width={250}
-                              height={250}
-                              className={` h-35 w-35 object-contain transition-[filter,opacity,transform] duration-700 ${
+                              width={140}
+                              height={140}
+                              className={`h-20 w-20 sm:h-28 sm:w-28 object-contain transition-[filter,opacity,transform] duration-700 ${
                                 highlightedTitles.has(card.title) ? "grayscale-0 opacity-100" : "grayscale opacity-70"
                             } hover:grayscale-0 hover:opacity-100`}
                             />
@@ -537,11 +553,11 @@ export default function SCarousel({
                     </div>
                   </TiltedCard>
 
-                  <div className=" mb-5 pointer-events-none absolute inset-x-0 bottom-0 z-10 text-center">
-                    <h3 className="text-[15px] font-semibold text-slate-800">
+                  <div className="mb-2 pointer-events-none absolute inset-x-0 bottom-0 z-10 text-center">
+                    <h3 className="text-[12px] sm:text-[13px] font-semibold text-slate-800">
                       {card.title}
                     </h3>
-                    <p className="mt-2 mx-auto text-[10px] leading-3 text-slate-500 px-10">
+                    <p className="mt-1 mx-auto text-[8px] sm:text-[9px] leading-4 sm:leading-3 text-slate-500 px-3 sm:px-8">
                       {card.description}
                     </p>
                   </div>
@@ -553,7 +569,7 @@ export default function SCarousel({
           {twoRows ? (
             <div
               ref={scrollerBottomRef}
-              className="hide-scrollbar flex gap-15 overflow-x-scroll py-2 px-6 md:px-0"
+              className="hide-scrollbar flex gap-3 md:gap-15 overflow-x-scroll py-2 px-2 md:px-0"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {cards.map((card) => (
@@ -561,20 +577,20 @@ export default function SCarousel({
                   key={`row2-${card.title}`}
                   type="button"
                   onClick={() => openModal(card)}
-                  className="shrink-0 w-[85%] sm:w-[45%] md:w-[30%] flex flex-col items-center text-left"
+                  className="shrink-0 w-[55%] sm:w-[45%] md:w-[30%] flex flex-col items-center text-left scale-[0.8] sm:scale-100"
                 >
-                  <div className="relative w-full max-w-sm pb-18">
-                    <TiltedCard className="mx-auto h-56 w-full max-w-[18rem]">
-                      <div className="relative h-full w-full overflow-hidden rounded-[28px] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,255,0.92)_100%)]">
-                        <div className="pointer-events-none absolute inset-x-8 top-0 h-16 rounded-full bg-[radial-gradient(circle,rgba(72,115,255,0.18)_0%,transparent_70%)] blur-2xl" />
+                  <div className="relative w-full max-w-[11rem] sm:max-w-sm pb-10">
+                    <TiltedCard className="mx-auto h-[9.5rem] w-full max-w-[11rem] sm:h-56 sm:max-w-[18rem]">
+                      <div className="relative h-full w-full overflow-hidden rounded-[24px] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,255,0.92)_100%)]">
+                        <div className="pointer-events-none absolute inset-x-6 top-0 h-14 rounded-full bg-[radial-gradient(circle,rgba(72,115,255,0.14)_0%,transparent_70%)] blur-lg" />
                         <div className="relative flex h-full items-center justify-center">
                           {card.iconSrc ? (
                             <Image
                                 src={card.iconSrc}
                                 alt=""
-                                width={220}
-                                height={220}
-                                className={`h-35 w-35 object-contain transition-[filter,opacity,transform] duration-700 ${
+                                width={140}
+                                height={140}
+                                className={`h-20 w-20 sm:h-28 sm:w-28 object-contain transition-[filter,opacity,transform] duration-700 ${
                                   highlightedTitles.has(card.title) ? "grayscale-0 opacity-100" : "grayscale opacity-70"
                               } hover:grayscale-0 hover:opacity-100`}
                               />
@@ -583,11 +599,11 @@ export default function SCarousel({
                       </div>
                     </TiltedCard>
 
-                    <div className="mb-5 pointer-events-none absolute inset-x-0 bottom-0 z-10 text-center">
-                      <h3 className="text-[15px] font-semibold text-slate-800">
+                    <div className="mb-2 pointer-events-none absolute inset-x-0 bottom-0 z-10 text-center">
+                      <h3 className="text-[12px] sm:text-[13px] font-semibold text-slate-800">
                         {card.title}
                       </h3>
-                      <p className="mt-2 mx-auto text-[10px] leading-3 px-10 text-slate-500">
+                      <p className="mt-1 mx-auto text-[8px] sm:text-[9px] leading-3 px-3 sm:px-8 text-slate-500">
                         {card.description}
                       </p>
                     </div>

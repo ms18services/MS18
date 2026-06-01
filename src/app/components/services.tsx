@@ -108,7 +108,7 @@ export default function Services() {
           </div>
         </div>
 
-        <div className="-mt-2 md:-mt-8">
+        <div className="-mt-2 md:-mt-820-mt-12">
           <div className="mx-auto max-w-6xl px-0 md:px-6">
             <GradualBlur blur={18} y={56} start="top 92%" end="top 50%">
               <Suspense fallback={null}>

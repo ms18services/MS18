@@ -362,7 +362,7 @@ export default function TeamCarousel3D({
             onClick={() => setActiveIndex(i)}
             aria-label={`Go to ${i + 1}`}
             className={
-              "h-2 w-2 rounded-full transition " +
+              "h-2 w-2 rounded-full transition opacity-0" +
               (i === activeIndex ? "bg-slate-900" : "bg-slate-300 hover:bg-slate-400")
             }
           />

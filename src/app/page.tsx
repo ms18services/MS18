@@ -190,7 +190,7 @@ export default function Home() {
 
 
           <div className="-mt-1 text-center">
-            <h1 className="mx-auto max-w-[500px] text-[2.3rem] leading-[0.7] tracking-tight">
+            <h1 className="mx-auto max-w-[500px] text-[2.0rem] leading-[0.7] tracking-tight">
               <span className="block text-[#522BC9]">
                 <span className="font-miama inline-block align-baseline text-[3.45em] leading-[0.52]">W</span>
                 <span className="-ml-1 font-bold ">e</span>

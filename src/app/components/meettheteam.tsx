@@ -23,7 +23,7 @@ export default function MeetTheTeam() {
       imageSrc: "/face/final/romeo.jpg",
     },
     {
-      name: "Benjaming G. Singcol Sr.",
+      name: "Benjaming Singcol Sr.",
       role: "IT Department",
       imageSrc: "/face/final/benjie.jpg",
     },
@@ -55,10 +55,10 @@ export default function MeetTheTeam() {
 
   return (
     <section className="mt-2 md:-mt-20">
-      <div className="mx-auto mt-20 max-w-6xl px-6 md:mt-40">
+      <div className="mx-auto mt-30 max-w-6xl px-6 md:mt-40">
         <div className="relative flex items-center justify-center py-10">
           <div className="pointer-events-none absolute flex items-center justify-center">
-            <div className="-translate-y-34 bg-gradient-to-r from-[#4873FF] via-[#1629A6] to-[#142699] from-5% via-50% to-100% bg-clip-text text-transparent opacity-100 md:-translate-y-55">
+            <div className="-translate-y-39 bg-gradient-to-r from-[#4873FF] via-[#1629A6] to-[#142699] from-5% via-50% to-100% bg-clip-text text-transparent opacity-100 md:-translate-y-55">
               <BlurText
                 as="h2"
                 text="Meet The Team."
